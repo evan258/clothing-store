@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+
+@import "tailwindcss";
+
+@theme {
+    --font-archivo: "Archivo Black", sans-serif;
+    --font-satoshi: 'Satoshi', sans-serif;
+}
+
+@layer base {
+    body {
+        @apply bg-white text-black font-satoshi;
+    }
+    h1 {
+        @apply font-archivo text-[32px] leading-8.5 md:text-[40px] md:leading-10 lg:text-[46px] lg:leading-11.5 xl:text-[54px] 
+        xl:leading-13.5 2xl:text-[64px] 2xl:leading-16 font-bold;
+    }
+    h2 {
+        @apply font-archivo text-[32px] md:text-[36px] lg:text-[40px] xl:text-[44px] 2xl:text-[48px] font-bold;
+    }
+    h3 {
+        @apply font-satoshi text-[24px] md:text-[28px] lg:text-[32px] font-bold;
+    }
+    h4 {
+        @apply font-satoshi text-[20px] md:text-[22px] lg:text-[24px] font-bold;
+    }
+    h5 {
+        @apply font-satoshi text-[16px] md:text-[18px] lg:text-[20px] font-bold;
+    }
+    a {
+        @apply text-[12px] lg:text-[14px] xl:text-[16px] font-normal;
+    }
+    p {
+        @apply text-[12px] lg:text-[14px] xl:text-[16px] font-normal leading-5;
+    }
+}
+
+@layer components {
+    .btn-dark {
+        @apply whitespace-nowrap py-3 w-full md:w-auto text-center bg-black text-white text-[16px] px-17 rounded-[62px];
+    }
+}
+
+@layer utilities {
+    .container {
+        @apply max-w-[93%] mx-auto;
+    }
+}
+
+
+
+
+
+
+
+
