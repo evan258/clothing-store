@@ -4,6 +4,10 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
+import ReviewForm from "./pages/ReviewForm.jsx";
+import EditReview from "./pages/EditReview.jsx";
+import Footer from "./components/Footer.jsx";
+import Cart from "./pages/Cart.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -56,7 +60,11 @@ function App() {
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/register" element={<Register setUser={setUser} />} />
             <Route path="/products/:id" element={<ProductDetails user={user} setUser={setUser} categories={categories} />} />
+            <Route path="/reviews/post/:id" element={<ReviewForm />} />
+            <Route path="/reviews/put/:id" element={<EditReview />} />
+            <Route path="/cart" element={<Cart />} />
         </Routes>
+        <Footer />
       </>
   );
 }

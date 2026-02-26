@@ -1,0 +1,41 @@
+import { useLayoutEffect, useRef, useState } from "react"
+
+
+const ReviewText = ({text}) => {
+    const [expanded, setExpanded] = useState(false);
+    const [toggleNeeded, setToggleNeeded] = useState(false);
+    const textRef = useRef(null);
+
+    useLayoutEffect(() => {
+        if (textRef.current) {
+            const truncated = textRef.current.scrollHeight > textRef.current.clientHeight;
+            setToggleNeeded(truncated);
+        }
+    }, [text]);
+
+    return (
+        <div>
+            <p 
+                ref={textRef} 
+                className={
+                    `relative ${expanded ? "line-clamp-none" : "line-clamp-4 lg:line-clamp-3"} 
+                    ${(!expanded && toggleNeeded) ? "after_line" : ""}`
+                }
+            >
+                {text}
+            </p>
+            {toggleNeeded && (
+                <>
+                    <button 
+                        onClick={() => setExpanded(!expanded)}
+                        className="text-gray-400 font-medium text-[12px] lg:text-[14px] xl:text-[16px] leading-5"
+                    >
+                        {expanded? "See less": "Read more"}
+                    </button>
+                </>
+            )}
+        </div>
+    )
+}
+
+export default ReviewText;

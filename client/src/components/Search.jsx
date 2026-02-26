@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 import X from "../assets/images/X.svg";
 
-const Search = () => {
+const Search = ({inputRef}) => {
     const [query, setQuery] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState("");
     const [suggessions, setSuggessions] = useState([]);
@@ -49,10 +49,17 @@ const Search = () => {
         setSuggessions([]);
     }
 
+    useEffect(() => {
+        if (inputRef && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
+
     return (
         <div className="bg-[#F0F0F0] rounded-[62px] overflow-hidden w-full flex items-center gap-3 py-3 px-4">
             <img className="size-5" src={search} alt="search" />
             <input 
+                ref={inputRef}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                 onChange={(e) => setQuery(e.target.value)} 
@@ -73,26 +80,24 @@ const Search = () => {
                                 return (
                                     <Link onClick={handleClear} to={`/products/${item.id}`} key={item.id}>
                                         <div className="">
-                                            <div className="">
-                                                <div className={`size-35 sm:size-43 md:size-50 lg:size-60 xl:size-70 bg-[#F0F0F0] 
-                                                    rounded-[14px] md:[rounded-16px] lg:rounded-[18px] xl:rounded-[20px]
-                                                    overflow-hidden`}>
-                                                    <img src={item.image_url} alt="product image" />
-                                                </div>
-                                                <h5>{item.name}</h5>
-                                                <StarRating averageRating={parseFloat(item.average_rating)} />
-                                                <p>{`Rated by ${item.total_reviews} people`}</p>
-                                                <div className="flex gap-1 items-center flex-wrap">
-                                                    <h4>{((item.price_cents - (item.price_cents * item.discount_percentage / 100))/100).toFixed(2)}</h4>
-                                                    {item.discount_percentage > 0 && (
-                                                        <>
-                                                            <h4 className="text-[rgba(0,0,0,0.4)] line-through">{((item.price_cents)/100).toFixed(2)}</h4>
-                                                            <button className="rounded-[62px] bg-red-200 text-red-500 py-3 px-2">
-                                                                {`${item.discount_percentage}%`}
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </div>
+                                            <div className={`size-35 sm:size-43 md:size-50 lg:size-60 xl:size-70 bg-[#F0F0F0] 
+                                                rounded-[14px] md:[rounded-16px] lg:rounded-[18px] xl:rounded-[20px]
+                                                overflow-hidden`}>
+                                                <img src={item.image_url} alt="product image" />
+                                            </div>
+                                            <h5>{item.name}</h5>
+                                            <StarRating averageRating={parseFloat(item.average_rating)} />
+                                            <p>{`Rated by ${item.total_reviews} people`}</p>
+                                            <div className="flex gap-1 items-center flex-wrap">
+                                                <h4>{((item.price_cents - (item.price_cents * item.discount_percentage / 100))/100).toFixed(2)}</h4>
+                                                {item.discount_percentage > 0 && (
+                                                    <>
+                                                        <h4 className="text-[rgba(0,0,0,0.4)] line-through">{((item.price_cents)/100).toFixed(2)}</h4>
+                                                        <button className="rounded-[62px] bg-red-200 text-red-500 py-3 px-2">
+                                                            {`${item.discount_percentage}%`}
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </Link>

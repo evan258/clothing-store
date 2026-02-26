@@ -93,21 +93,35 @@ app.post('/login', async (req, res) => {
 
 const requireAuth = (req, res, next) => {
     if (!req.session.userId) {
-        return res.status(401).json({error: "Not logged in"});
+        return res.status(401).json({message: "Not logged in"});
     }
     next();
 }
 
+app.get('/delivery/options', async (_req, res) => {
+    try {
+        const result = await pool.query(
+            "SELECT * FROM delivery_options"
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: "Server error"});
+    }
+});
+
+
 app.get('/cart', requireAuth, async (req, res) => {
     try {
         const cartResults = await pool.query(
-            `SELECT ci.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
             ci.size, ci.quantity, pv.stock
             FROM carts c
             JOIN cart_items ci ON c.id = ci.cart_id
             JOIN products p ON ci.product_id = p.id
             JOIN product_variants pv ON pv.product_id = p.id AND pv.size = ci.size
-            WHERE c.user_id = $1`,[req.session.userId]
+            WHERE c.user_id = $1
+            ORDER BY p.id ASC, ci.size ASC`,[req.session.userId]
         );
         res.json(cartResults.rows);
     } catch (err) {
@@ -153,7 +167,7 @@ app.post('/cart', requireAuth, async (req, res) => {
             );
         }
         const updatedCart = await pool.query(
-            `SELECT ci.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
             ci.size, ci.quantity, pv.stock
             FROM carts c
             JOIN cart_items ci ON c.id = ci.cart_id
@@ -171,16 +185,13 @@ app.post('/cart', requireAuth, async (req, res) => {
 app.put('/cart', requireAuth, async (req, res) => {
     try {
         const {product_id, size, quantity} = req.body;
-        if (!quantity) {
-            return res.status(400).json({message: "Bad connection"});
-        }
         const userCart = await pool.query(
             "SELECT id FROM carts WHERE user_id = $1", [req.session.userId]
         );
         const cart_id = userCart.rows[0].id;
         const cartItemCheck = await pool.query(
-            `SELECT * FROM cart_items WHERE cart_id = $1 AND product_id = $2 AND size = $3 AND quantity = $4`,
-            [cart_id, product_id, size, quantity]
+            `SELECT * FROM cart_items WHERE cart_id = $1 AND product_id = $2 AND size = $3`,
+            [cart_id, product_id, size]
         );
         if (cartItemCheck.rows.length === 0) {
             return res.status(404).json({message: "Not found"});
@@ -196,26 +207,26 @@ app.put('/cart', requireAuth, async (req, res) => {
             );
             const stock = variant.rows[0].stock;
              if (quantity > stock) {
-                return res.status(400).json({error: `Only ${stock} items left in stock`});
+                return res.status(400).json({message: `Only ${stock} items left in stock`});
             }
             await pool.query(
                 `UPDATE cart_items SET quantity = $1 WHERE cart_id = $2 AND product_id = $3 AND size = $4`,[quantity, cart_id, product_id, size]
             );
         }
         const updatedCart = await pool.query(
-            `SELECT ci.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, 
             ci.size, ci.quantity, pv.stock
             FROM carts c
             JOIN cart_items ci ON c.id = ci.cart_id
             JOIN products p ON ci.product_id = p.id
             JOIN product_variants pv ON pv.product_id = p.id AND pv.size = ci.size
-            WHERE c.user_id = $1`,[req.session.userId]
-
+            WHERE c.user_id = $1
+            ORDER BY p.id ASC, ci.size ASC`,[req.session.userId]
         );
         res.json(updatedCart.rows);
     } catch (err) {
         console.log(err);
-        res.status(500).json({error: "Server error"});
+        res.status(500).json({message: "Server error"});
     }
 });
 
@@ -356,7 +367,7 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
         await client.query("COMMIT");
         res.json({message: "Order was successfully cancelled"});
     } catch (err) {
-        client.query("ROLLBACK");
+        await client.query("ROLLBACK");
         console.log(err);
         res.status(400).json({error: err.message});
     } finally {
@@ -453,6 +464,12 @@ app.post('/reviews', requireAuth,  async (req, res) => {
         if (productCheck.rows.length === 0) {
             return res.status(404).json({message: "Product not found"});
         }
+        const existing = await pool.query(
+            "SELECT * FROM reviews WHERE user_id = $1 AND product_id = $2", [req.session.userId, product_id]
+        );
+        if (existing.rows.length > 0) {
+            return res.status(400).json({message: "You already have reviewed this product"});
+        }
         const reviewResult = await pool.query(
             `INSERT INTO reviews (user_id, product_id, rating, review_text)
             VALUES ($1, $2, $3, $4) RETURNING *`, [req.session.userId, product_id, rating, review_text]
@@ -472,9 +489,9 @@ app.put('/reviews/:id', requireAuth, async (req, res) => {
             "SELECT user_id FROM reviews WHERE id = $1", [reviewId]
         );
         if (reviewCheck.rows.length === 0) {
-            return res.json(404).json({message: "No reviews found"});
+            return res.status(404).json({message: "No reviews found"});
         }
-        if (reviewCheck.rows[0].userId !== req.session.userId) {
+        if (reviewCheck.rows[0].user_id !== req.session.userId) {
             return res.status(403).json({message: "Not allowed to edit this review"});
         }
         const updated = await pool.query(
@@ -488,16 +505,16 @@ app.put('/reviews/:id', requireAuth, async (req, res) => {
     }
 });
 
-app.delete('/reviews/:id', async (req, res) => {
+app.delete('/reviews/:id', requireAuth, async (req, res) => {
     try {
         const reviewId = req.params.id;
         const reviewCheck = await pool.query(
             "SELECT user_id FROM reviews WHERE id = $1", [reviewId]
         );
         if (reviewCheck.rows.length === 0) {
-            return res.json(404).json({message: "No reviews found"});
+            return res.status(404).json({message: "No reviews found"});
         }
-        if (reviewCheck.rows[0].userId !== req.session.userId) {
+        if (reviewCheck.rows[0].user_id !== req.session.userId) {
             return res.status(403).json({message: "Not allowed to edit this review"});
         }
         await pool.query(
@@ -509,6 +526,23 @@ app.delete('/reviews/:id', async (req, res) => {
         res.status(500).json({error: err.message});
     }
 });
+
+app.get('/reviews/:id', async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+        const reviewCheck = await pool.query(
+            "SELECT * FROM reviews WHERE id = $1", [reviewId]
+        );
+        if (reviewCheck.rows.length === 0) {
+            return res.status(404).json({message: "No reviews found"});
+        }
+            res.json(reviewCheck.rows[0]);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: err.message});
+    }
+})
+
 
 app.get('/reviews', requireAuth, async (req, res) => {
     try {
@@ -642,8 +676,39 @@ app.get('/products/search', async (req, res) => {
             LEFT JOIN reviews r ON p.id = r.product_id
             WHERE p.name ILIKE $1
             GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage
-            ORDER BY p.name
-            LIMIT 5`, [`%${q}%`]
+            ORDER BY p.name`, [`%${q}%`]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: "Server error"});
+    }
+});
+
+app.get('/products/:id/related', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const existing = await pool.query(
+            "SELECT name FROM products WHERE id = $1", [id]
+        );
+        if (existing.rows.length === 0) {
+            return res.status(404).json({message: "No product found"});
+        }
+        const name = existing.rows[0].name;
+        const result = await pool.query(
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage,
+            COUNT(r.id) AS total_reviews, AVG(r.rating) AS average_rating
+            FROM products p
+            JOIN products_categories pc ON p.id = pc.product_id
+            LEFT JOIN reviews r ON r.product_id = p.id
+            WHERE pc.category_id IN (
+                SELECT category_id FROM products_categories WHERE product_id = $1
+            )
+            AND p.id != $1
+            -- AND p.name % $2
+            GROUP BY p.id, p.name, p.image_url, p.price_cents,p.discount_percentage
+            ORDER BY similarity(p.name, $2) DESC, average_rating DESC
+            LIMIT 6`, [id, name]
         );
         res.json(result.rows);
     } catch (err) {
@@ -666,7 +731,7 @@ app.get('/products/:id', async (req, res) => {
         res.json(productResult.rows[0]);
     } catch (err) {
         console.log(err);
-        res.status(500).json({error: "Server error"});
+        res.status(500).json({message: "Server error"});
     }
 });
 
@@ -679,7 +744,7 @@ app.get('/products/:id/stock', async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.log(err);
-        res.status(500).json({error: "Server error"});
+        res.status(500).json({message: "Server error"});
     }
 });
 

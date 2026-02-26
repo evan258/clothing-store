@@ -16,6 +16,7 @@ const Header = ({user, categories}) => {
     const [searchOpen, setSearchOpen] = useState(false);
     const shopRef = useRef(null);
     const searchRef = useRef(null);
+    const inputRef = useRef(null);
 
     const toggleNav = () => {
         if (navOpen) {
@@ -67,7 +68,7 @@ const Header = ({user, categories}) => {
                                 </ul>
                             )}
                         </li>
-                        <li><a className="whitespace-nowrap" href="#">On Sale</a></li>
+                        <li><a className="whitespace-nowrap" href="#">Top Selling</a></li>
                         <li><a className="whitespace-nowrap" href="#">New Arrivals</a></li>
                         <li><a className="whitespace-nowrap" href="#">Brands</a></li>
                     </ul>
@@ -84,7 +85,7 @@ const Header = ({user, categories}) => {
                     </button>
                     {searchOpen && (
                         <div className="absolute bottom-2 md:bottom-3 left-0 right-0 min-w-max z-10">
-                            <Search />
+                            <Search inputRef={inputRef} />
                         </div>
                     )}
                     <Link to="/cart">
