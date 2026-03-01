@@ -15,11 +15,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const PgSession = connectPgSimple(session);
+const pgSession = connectPgSimple(session);
 
 app.use(
     session({
-        store: new PgSession({
+        store: new pgSession({
             pool: pool,
             tableName: "session"
         }),

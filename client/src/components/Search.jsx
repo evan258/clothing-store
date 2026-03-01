@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import search from "../assets/images/search.svg";
-import { enablePageScroll, disablePageScroll } from "scroll-lock";
+import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 import X from "../assets/images/X.svg";

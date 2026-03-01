@@ -8,7 +8,7 @@ import search from "../assets/images/search.svg";
 import toggle from "../assets/images/toggle.png";
 import { Link } from "react-router-dom";
 import Search from "./Search";
-import { enablePageScroll, disablePageScroll } from "scroll-lock";
+import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 
 const Header = ({user, categories}) => {
     const [navOpen, setNavOpen] = useState(false);

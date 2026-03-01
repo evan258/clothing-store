@@ -198,12 +198,9 @@ CREATE TABLE "session" (
   "expire" timestamp(6) NOT NULL
 )
 WITH (OIDS=FALSE);
-
 ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
 CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
 CREATE INDEX idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
 
