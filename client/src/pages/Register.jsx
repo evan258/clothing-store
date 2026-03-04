@@ -29,7 +29,7 @@ const Register = ({setUser}) => {
         try {
             e.preventDefault();
 
-            if (!formData.email || !formData.password) {
+            if (!formData.email || !formData.password || !formData.username) {
                 setError("All fields are required");
                 return;
             } else if (formData.password.length > 4) {
@@ -54,8 +54,9 @@ const Register = ({setUser}) => {
                 credentials: 'include',
             });
             const userData = await userRes.json();
+            const id = userData.id;
             setUser(userData);
-            navigate('/dashboard');
+            navigate(`/dashboard/${id}`);
         } catch (err) {
             console.log(err);
             setError("Server error");
@@ -63,16 +64,16 @@ const Register = ({setUser}) => {
     }
 
     return (
-        <div className="flex justify-center items-center container h-screen">
+        <div className="flex justify-center items-center container min-h-screen">
             <div className="w-auto sm:w-100">
                 <h1 className="text-center text-[30px]">Register</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6 py-5">
-                    <label htmlFor="email-field" className="font-archivo font-extralight">User Name</label>
+                    <label htmlFor="username-field" className="font-archivo font-extralight">User Name</label>
                     <input 
                         name="username" type="text" placeholder="Enter your username" id="username-field" 
                         value={formData.username} onChange={handleChange} 
                         className="bg-[#F0F0F0] p-4 w-full rounded-xl" />
-                    <label htmlFor="username-field" className="font-archivo font-extralight">Email</label>
+                    <label htmlFor="email-field" className="font-archivo font-extralight">Email</label>
                     <input 
                         name="email" type="email" placeholder="Enter your email" id="email-field" 
                         value={formData.email} onChange={handleChange} 

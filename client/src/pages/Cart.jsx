@@ -4,13 +4,32 @@ import CartItem from "../components/CartItem";
 import normal from "../assets/images/normal.png";
 import fast from "../assets/images/fast.png";
 import superFast from "../assets/images/superFast.png";
+import { useLocation } from "react-router-dom";
+import OrderSummary from "../components/OrderSummary";
 
-const Cart = () => {
+const Cart = ({user, setUser, categories}) => {
     const [cartItems, setCartItems] = useState([]);
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [quantities, setQuantities] = useState({});
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state ?.error) {
+            setError(location.state.error);
+            setTimeout(() => {
+                setError("");
+            }, 1500);
+        } else if (location.state ?.message) {
+            setMessage(location.state.message);
+            setTimeout(() => {
+                setMessage("");
+            }, 1500);
+        }
+        window.history.replaceState({}, document.title); // replace state so error doesn't show up on refresh
+    }, [location]);
 
     const selectedDeliveryOption = deliveryOptions.find((opt) => opt.id === selectedDeliveryId);
     const deliveryPrice = selectedDeliveryOption? selectedDeliveryOption.price_cents : 0;
@@ -63,6 +82,11 @@ const Cart = () => {
                 if (deliveryOptionsData.length) {
                     setSelectedDeliveryId(deliveryOptionsData[0].id);
                 }
+                const userRes = await fetch("http://localhost:3000/me", {
+                    credentials: "include",
+                });
+                const userData = await userRes.json();
+                setUser(userData);
             } catch (err) {
                 setError("Server error");
                 setTimeout(() => {
@@ -75,8 +99,8 @@ const Cart = () => {
 
     return (
         <>
-            <Header />
-            <div className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5 pb-46 md:pb-44 lg:pb-42">
+            <Header user={user} categories={categories} />
+            <div className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5">
                 <div className="max-w-310 mx-auto">
                     <h2 className="pb-5 md:pb-6">YOUR CART</h2>
                     <div className="grid grid-cols-3 gap-4 md:gap-5">
@@ -87,69 +111,51 @@ const Cart = () => {
                                 )
                             })}
                         </div>
-                        <div className="col-span-3 lg:col-span-1 w-full flex flex-col md:flex-row lg:flex-col gap-4 md:gap-5">
-                            <div className="flex flex-1 flex-col gap-4 md:gap-5 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
-                                <h4 className="border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6">Delivery Options</h4>
-                                {deliveryOptions.map((option, index) => {
-                                    return (
-                                        <label key={option.id} 
-                                            className={`cursor-pointer ${index !== deliveryOptions.length - 1 ? "border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6" : ""}`}
-                                        >
-                                            <div className="flex item-center gap-2 md:gap-3">
-                                                <div className="size-8 md:size-10 lg:size-12">
-                                                    <img src={deliveryIcons[option.name]} alt="delivery image" />
-                                                </div>
-                                                <div>
-                                                    <div className="flex justify-between gap-2 md:gap-3">
-                                                        <h5>{option.name}</h5>
-                                                        <h5>${(option.price_cents / 100).toFixed(2)}</h5>
-                                                        <input
-                                                            type="radio"
-                                                            name="delivery"
-                                                            checked={selectedDeliveryId === option.id}
-                                                            onChange={() => setSelectedDeliveryId(option.id)} 
-                                                            className="accent-black"
-                                                        />
+                        {cartItems.length > 0 && (
+                            <div className="col-span-3 lg:col-span-1 w-full max-h-max flex flex-col md:flex-row lg:flex-col gap-4 md:gap-5">
+                                <div className="flex flex-1 flex-col gap-4 md:gap-5 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
+                                    <h4 className="border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6">Delivery Options</h4>
+                                    {deliveryOptions.map((option, index) => {
+                                        return (
+                                            <label key={option.id} 
+                                                className={`cursor-pointer ${index !== deliveryOptions.length - 1 ? "border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6" : ""}`}
+                                            >
+                                                <div className="flex item-center gap-2 md:gap-3">
+                                                    <div className="size-8 md:size-10 lg:size-12">
+                                                        <img src={deliveryIcons[option.name]} alt="delivery image" />
                                                     </div>
-                                                    <p>Estimated delivery in {option.estimated_days} days</p>
+                                                    <div>
+                                                        <div className="flex justify-between gap-2 md:gap-3">
+                                                            <h5>{option.name}</h5>
+                                                            <h5>${(option.price_cents / 100).toFixed(2)}</h5>
+                                                            <input
+                                                                type="radio"
+                                                                name="delivery"
+                                                                checked={selectedDeliveryId === option.id}
+                                                                onChange={() => setSelectedDeliveryId(option.id)} 
+                                                                className="accent-black"
+                                                            />
+                                                        </div>
+                                                        <p>Estimated delivery in {option.estimated_days} days</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </label>
-                                    )
-                                })}
-                            </div>
-                            <div className="flex flex-col gap-4 md:gap-5 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
-                                <h4 className="border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6">Order Summary</h4>
-                                <div className="border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6 flex flex-col gap-5">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[rgba(0,0,0,0.6)]">Subtotal</span>
-                                        <h5>${(subtotal / 100).toFixed(2)}</h5>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[rgba(0,0,0,0.6)]">Discount{`(-${Math.floor(averageDiscount)})`}</span>
-                                        <h5>${(totalDiscount / 100).toFixed(2)}</h5>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[rgba(0,0,0,0.6)]">Delivery Fee</span>
-                                        <h5>${(deliveryPrice / 100).toFixed(2)}</h5>
-                                    </div>
+                                            </label>
+                                        )
+                                    })}
                                 </div>
-                                <div className="flex justify-between items-center pb-4 md:pb-5 lg:pb-6 gap-5">
-                                    <span className="font-medium">Total</span>
-                                    <h4>${(total / 100).toFixed(2)}</h4>
-                                </div>
-                                <button 
-                                    className="btn-dark"
-                                >
-                                    Go to Checkout
-                                </button>
+                                <OrderSummary subtotal={subtotal} averageDiscount={averageDiscount} totalDiscount={totalDiscount} deliveryPrice={deliveryPrice} total={total} selectedDeliveryId={selectedDeliveryId} />
                             </div>
-                        </div>
+                        )}
                     </div>
                     <div className="fixed bottom-0 -translate-y-full left-0 right-0 z-50">
                         {error && (
                             <div className="min-w-75 sm:min-w-100 md:min-w-125 lg:min-w-150 text-center tracking-wide max-w-max mx-auto px-3 py-2 bg-red-100 text-red-600 rounded-2xl">
                                 {error}
+                            </div>
+                        )}
+                        {message && (
+                            <div className="min-w-75 sm:min-w-100 md:min-w-125 lg:min-w-150 text-center tracking-wide max-w-max mx-auto px-3 py-2 bg-green-100 text-green-600 rounded-2xl">
+                                {message}
                             </div>
                         )}
                     </div>
@@ -160,4 +166,3 @@ const Cart = () => {
 }
 
 export default Cart;
-

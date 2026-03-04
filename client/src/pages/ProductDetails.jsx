@@ -15,7 +15,9 @@ const ProductDetails = ({user, setUser, categories}) => {
     const { id } = useParams();
     const [productDetails, setProductDetails] = useState({});
     const [error, setError] = useState("");
+    const [cartError, setCartError] = useState("");
     const [message, setMessage] = useState("");
+    const [cartMessage, setCartMessage] = useState("");
     const [stocks, setStocks] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [selectedStock, setSelectedStock] = useState(null);
@@ -27,7 +29,7 @@ const ProductDetails = ({user, setUser, categories}) => {
     const scrollRef = useRef(null);
 
     const scroll = (direction) => {
-        if (scrollRef.current && related.length > 0) {
+        if (scrollRef.current && scrollRef.current.scrollWidth > scrollRef.current.clientWidth) {
             const scrollAmount = scrollRef.current.scrollWidth / related.length;
             
             scrollRef.current.scrollBy({
@@ -60,12 +62,12 @@ const ProductDetails = ({user, setUser, categories}) => {
             top: 0,
             behavior: "smooth",
         });
-    },[currentPage]);
+    },[id]);
 
     useEffect(() => {
         setQuantity(1);
-        setError("");
-        setMessage("");
+        setCartError("");
+        setCartMessage("");
     },[selectedStock]);
 
     useEffect(() => {
@@ -112,23 +114,23 @@ const ProductDetails = ({user, setUser, categories}) => {
     },[id]);
 
     const handleAddToCart = async () => {
-        setError("");
-        setMessage("");
+        setCartError("");
+        setCartMessage("");
         if (!selectedStock) {
-            setError("Please select a size first");
+            setCartError("Please select a size first");
             return;
         }
         if (selectedStock.stock < quantity) {
-            setError("Not enough items available in stock");
+            setCartError("Not enough items available in stock");
             return;
         }
         if (quantity <= 0) {
-            setError("Quantity must be at least 1");
+            setCartError("Quantity must be at least 1");
             return;
         }
         const parsed = Number(quantity);
         if (!Number.isInteger(parsed)) {
-            setError("Please enter a whole number");
+            setCartError("Please enter a whole number");
             return;
         }
 
@@ -147,10 +149,10 @@ const ProductDetails = ({user, setUser, categories}) => {
             });
             const data = await res.json();
             if (!res.ok) {
-                setError(data.message);
+                setCartError(data.message);
                 return;
             }
-            setMessage("Item Added to the cart");
+            setCartMessage("Item Added to the cart");
             const userRes = await fetch("http://localhost:3000/me", {
                 credentials: "include",
             });
@@ -158,7 +160,7 @@ const ProductDetails = ({user, setUser, categories}) => {
             setUser(userData);
         } catch (err) {
             console.log(err);
-            setError("Server error");
+            setCartError("Server error");
         }
     }
 
@@ -263,14 +265,14 @@ const ProductDetails = ({user, setUser, categories}) => {
                             </button>
                         </div>
                         <div className="py-1 md:py-2 lg:py-3">
-                            {error && (
+                            {cartError && (
                                 <div className="mt-4 px-3 py-2 bg-red-100 text-red-600 rounded-2xl">
-                                    {error}
+                                    {cartError}
                                 </div>
                             )}
-                            {message && (
+                            {cartMessage && (
                                 <div className="mt-4 px-3 py-2 bg-green-100 text-green-600 rounded-2xl">
-                                    {message}
+                                    {cartMessage}
                                 </div>
                             )}
                         </div>
@@ -345,8 +347,7 @@ const ProductDetails = ({user, setUser, categories}) => {
                                     setCurrentPage(page);
                                 }}
                                 className={`text-center size-6 md:size-8 rounded-2xl
-                                    ${currentPage === page ? "text-white bg-black" : "text-black bg-[#F0F0F0]"}`
-                                }
+                                    ${currentPage === page ? "text-white bg-black" : "text-black bg-[#F0F0F0]"}`}
                             >
                                 {page}
                             </button>
@@ -364,7 +365,7 @@ const ProductDetails = ({user, setUser, categories}) => {
                     </button>
                 </div>
                 {related.length > 0 && (
-                    <div className="container pb-46 md:pb-44 lg:pb-42">
+                    <div className="container">
                         <h2 className="pt-10 md:pt-12 lg:pt-14 xl:pt-16 pb-8 md:pb-19 lg:pb-11 xl:pb-12 text-center">YOU MIGHT ALSO LIKE</h2>
                         <div 
                             ref={scrollRef}

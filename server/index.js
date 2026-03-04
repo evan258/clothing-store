@@ -3,16 +3,105 @@ import cors from "cors";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import bcrypt from "bcrypt";
+import Stripe from "stripe";
+import nodeCron from "node-cron";
 import pool from "./db.js";
 
 const PORT = process.env.PORT;
 const app = express();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors({
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+
+nodeCron.schedule('*/5 * * * *', async () => {
+    try {
+        const {rows} = await pool.query(
+            `SELECT payment_intent_id FROM orders
+            WHERE status = 'pending'
+            AND created_at < NOW() - INTERVAL '30 minutes'`,
+        );
+        for (const order of rows) {
+            await stripe.paymentIntents.cancel(order.payment_intent_id);
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+app.post('/webhook', express.raw({type: "application/json"}), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET_KEY);
+    } catch (err) {
+        console.log(err);
+        return res.status(400).send(err.message);
+    }
+    const payment_intent = event.data.object;
+    const orderId = parseInt(payment_intent.metadata.order_id);
+    const userId = parseInt(payment_intent.metadata.user_id);
+    if (event.type === "payment_intent.succeeded") {
+        try {
+            await pool.query(
+                "UPDATE orders SET status = 'paid' WHERE id = $1", [orderId]
+            );
+            console.log(`Order${orderId} was confirmed`);
+        } catch (err) {
+            console.log(err);
+        }
+    } else if (event.type === "payment_intent.canceled") {
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+            const itemsResult = await client.query(
+                "SELECT * FROM order_items WHERE order_id = $1", [orderId]
+            );
+            const items = itemsResult.rows;
+            const userCart = await client.query(
+                "SELECT id FROM carts WHERE user_id = $1", [userId]
+            );
+            const cart_id = userCart.rows[0].id;
+            for (let item of items) {
+                const existing = await client.query(
+                    `SELECT quantity, id FROM cart_items WHERE cart_id = $1 AND product_id = $2 AND size = $3`,
+                    [cart_id, item.product_id, item.size]
+                );
+                if (existing.rows.length > 0) {
+                    const newQuantity = existing.rows[0].quantity + item.quantity;
+                    await client.query(
+                        `UPDATE cart_items SET quantity = $1 WHERE id = $2`, [newQuantity, existing.rows[0].id]
+                    );
+                } else {
+                    await client.query(
+                        `INSERT INTO cart_items (cart_id, product_id, size, quantity) VALUES ($1, $2, $3, $4)`,
+                        [cart_id, item.product_id, item.size, item.quantity]
+                    );
+                }
+                await client.query(
+                    "UPDATE product_variants SET stock = stock + $1 WHERE product_id = $2 AND size = $3",
+                    [item.quantity, item.product_id, item.size]
+                );
+            }
+            await client.query("DELETE FROM order_items WHERE order_id = $1", [orderId]);
+            await client.query("DELETE FROM orders where id = $1", [orderId]);
+            await client.query("COMMIT")
+            console.log(`Order${orderId} was canceled`);
+        } catch (err) {
+            await client.query("ROLLBACK");
+            console.log(err);
+        } finally {
+            client.release();
+        }
+    }
+    console.log(event.type);
+    res.json({received: true});
+});
+
 app.use(express.json());
 
 const pgSession = connectPgSimple(session);
@@ -264,10 +353,89 @@ app.delete('/cart', requireAuth, async (req, res) => {
     }
 });
 
+app.get('/checkout/:id', requireAuth, async (req, res) => {
+    const orderId = req.params.id;
+    try {
+        const orderResult = await pool.query(
+            "SELECT status, total_cents, payment_intent_id FROM orders where id = $1", [orderId]
+        );
+        if (!orderResult.rows.length) {
+            return res.status(404).json({message: "Order has been expired"});
+        }
+        if (orderResult.rows[0].status !== 'pending') {
+            return res.status(400).json({message: "Order has already been paid"});
+        }
+        const payment_intent_id = orderResult.rows[0].payment_intent_id;
+        const total = orderResult.rows[0].total_cents;
+        if (!payment_intent_id) {
+            const payment_intent = await stripe.paymentIntents.create({
+                amount: total,
+                currency: "usd",
+                metadata: {
+                    order_id: orderId,
+                    user_id: req.session.userId,
+                },
+                automatic_payment_methods: {enabled: true, },
+            });
+            await pool.query(
+                "UPDATE orders SET payment_intent_id = $1 WHERE id = $2", [payment_intent.id, orderId]
+            );
+            return res.json({clientSecret: payment_intent.client_secret});
+        } else {
+            const payment_intent = await stripe.paymentIntents.retrieve(payment_intent_id);
+            return res.json({clientSecret: payment_intent.client_secret});
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({message: "Server error"});
+    }
+});
+
+app.get('/orders', requireAuth, async (req, res) => {
+    const orders = {};
+    try {
+        const result = await pool.query(
+            `SELECT o.id, o.status, o.total_cents, o.phone, o.shipping_address, o.created_at, o.delivery_option_id,
+            oi.product_id, oi.size, oi.quantity
+            FROM orders o
+            JOIN order_items oi ON oi.order_id = o.id
+            WHERE o.user_id = $1
+            ORDER BY created_at DESC`, [req.session.userId]
+        );
+        for (let row of result.rows) {
+            if (!orders[row.id]) {
+                orders[row.id] = {
+                    id: row.id,
+                    status: row.status,
+                    total_cents: row.total_cents,
+                    phone: row.phone,
+                    shipping_address: row.shipping_address,
+                    created_at: row.created_at,
+                    delivery_option_id: row.delivery_option_id,
+                    products: [],
+                }
+            }
+            orders[row.id].products.push({
+                product_id: row.product_id,
+                size: row.size,
+                quantity: row.quantity,
+            });
+        }
+        res.json(Object.values(orders));
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: "Server error"});
+    }
+});
+
+
 app.post('/orders', requireAuth, async (req, res) => {
     const client = await pool.connect();
     try {
-        const {delivery_option_id, shipping_address, phone, paid_amount} = req.body;
+        const {delivery_option_id, shipping_address, phone, payment_method} = req.body;
+        if (payment_method !== 'cod' && payment_method !== 'card') {
+            throw new Error("Invalid payment_method");
+        }
         await client.query("BEGIN");
         const cartResult = await client.query(
             "SELECT id FROM carts WHERE user_id = $1", [req.session.userId]
@@ -282,6 +450,9 @@ app.post('/orders', requireAuth, async (req, res) => {
             FOR UPDATE`, [cart_id]
         );
         const cartItems = cartItemsResults.rows;
+        if (cartItems.length === 0) {
+            throw new Error("Cart is empty");
+        }
         for (let item of cartItems) {
             if (item.quantity > item.stock) {
                 throw new Error(`Not enough stock for product ${item.name} size ${item.size}`);
@@ -300,13 +471,14 @@ app.post('/orders', requireAuth, async (req, res) => {
         );
         const deliveryCost = deliveryResult.rows[0].price_cents;
         total += deliveryCost;
+        const status = (payment_method === 'card') ? "pending" : "confirmed";
         const orderResult = await client.query(
-            `INSERT INTO orders (user_id, total_cents, paid_cents, phone, shipping_address, delivery_option_id)
+            `INSERT INTO orders (user_id, status, total_cents, phone, shipping_address, delivery_option_id)
             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [req.session.userId, total, paid_amount, phone, shipping_address, delivery_option_id]
+            [req.session.userId, status, total, phone, shipping_address, delivery_option_id]
         );
-        const orderDetails = orderResult.rows[0];
-        const orderId = orderDetails.id;
+        const order = orderResult.rows[0];
+        const orderId = order.id;
         for (let item of cartItems) {
             await client.query(
                 `INSERT INTO order_items (order_id, product_id, size, quantity)
@@ -323,7 +495,7 @@ app.post('/orders', requireAuth, async (req, res) => {
             "DELETE FROM cart_items WHERE cart_id = $1", [cart_id]
         );
         await client.query("COMMIT");
-        res.json({message: "Order added successfully", order_id: orderId});
+        res.json({orderId});
     } catch (err) {
         await client.query("ROLLBACK");
         console.log(err);
@@ -339,14 +511,14 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
         const orderId = req.params.id;
         await client.query("BEGIN");
         const orderCheck = await client.query(
-            "SELECT status from orders WHERE id = $1 FOR UPDATE", [orderId]
+            "SELECT status, payment_intent_id from orders WHERE id = $1 FOR UPDATE", [orderId]
         );
         if (orderCheck.rows.length === 0) {
             throw new Error("No order found");
         }
-        const status = orderCheck.rows[0].status;
+        const {status, payment_intent_id} = orderCheck.rows[0];
         if (status !== 'pending') {
-            throw new Error(`Order:${orderId} is already shipped`);
+            throw new Error("Order cannot be canceled");
         }
         const itemsResult = await client.query(
             `SELECT product_id, size, quantity FROM order_items WHERE order_id = $1`, [orderId]
@@ -358,6 +530,9 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
                 [item.quantity, item.product_id, item.size]
             );
         }
+        if (payment_intent_id) {
+            await stripe.paymentIntents.cancel(payment_intent_id);
+        }
         await client.query(
             `DELETE FROM order_items WHERE order_id = $1`, [orderId]
         );
@@ -365,7 +540,7 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
             `DELETE FROM orders WHERE id = $1`, [orderId]
         );
         await client.query("COMMIT");
-        res.json({message: "Order was successfully cancelled"});
+        res.json({message: "Order was successfully canceled"});
     } catch (err) {
         await client.query("ROLLBACK");
         console.log(err);
@@ -375,83 +550,26 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
     }
 });
 
-app.put('/orders/:id', requireAuth, async (req, res) => {
-    const client = await pool.connect();
+app.delete('/cancel/:id', requireAuth, async (req, res) => {
     try {
         const orderId = req.params.id;
-        const {items, delivery_option_id} = req.body;
-        await client.query("BEGIN");
-        const orderCheck = await client.query(
-            "SELECT status, delivery_option_id FROM orders WHERE id = $1 FOR UPDATE", [orderId]
+        const orderCheck = await pool.query(
+            "SELECT status, payment_intent_id from orders WHERE id = $1 FOR UPDATE", [orderId]
         );
         if (orderCheck.rows.length === 0) {
             throw new Error("No order found");
         }
-        if (orderCheck.rows[0].status !== 'pending') {
-            throw new Error(`Order:${orderId} has already been shipped`);
+        const {status, payment_intent_id} = orderCheck.rows[0];
+        if (status !== 'pending') {
+            throw new Error("Order cannot be canceled");
         }
-        const oldItemsResult = await client.query(
-            "SELECT product_id, size, quantity FROM order_items WHERE order_id = $1 FOR UPDATE", [orderId]
-        );
-        const oldItems = oldItemsResult.rows;
-        for (let item of oldItems) {
-            await client.query(
-                `UPDATE product_variants SET stock = stock + $1
-                WHERE product_id = $2 AND size =  $3`,
-                [item.quantity, item.product_id, item.size]
-            );
+        if (payment_intent_id) {
+            await stripe.paymentIntents.cancel(payment_intent_id);
         }
-        for (let item of items) {
-            const variants = await client.query(
-                `SELECT stock FROM product_variants WHERE product_id = $1 AND size = $2 FOR UPDATE`,
-                [item.product_id, item.size]
-            );
-            if (variants.rows[0].stock < item.quantity) {
-                throw new Error(`Product:${item.product_id} not enough in stock`);
-            }
-        }
-        for (let item of items) {
-            await client.query(
-                `UPDATE product_variants SET stock = stock - $1
-                WHERE product_id = $2 AND size = $3`,
-                [item.quantity, item.product_id, item.size]
-            );
-        }
-        await client.query(
-            "DELETE FROM order_items WHERE order_id = $1", [orderId]
-        );
-        let total = 0;
-        for (let item of items) {
-            const priceResult = await client.query(
-                `SELECT price_cents, discount_percentage FROM products
-                WHERE id = $1`, [item.product_id]
-            );
-            let price = priceResult.rows[0].price_cents;
-            const discount = priceResult.rows[0].discount_percentage;
-            price = Math.round(price - (price * discount) / 100);
-            total += price * item.quantity;
-            await client.query(
-                `INSERT INTO order_items (order_id, product_id, size, quantity)
-                VALUES ($1, $2, $3, $4)`, [orderId, item.product_id, item.size, item.quantity]
-            );
-        }
-        const deliveryCost = await client.query(
-            `SELECT price_cents FROM delivery_options WHERE id = $1`,
-            [delivery_option_id]
-        );
-        total += deliveryCost.rows[0].price_cents;
-        await client.query(
-            "UPDATE orders SET total_cents = $1, delivery_option_id = $3 WHERE id = $2",
-            [total, orderId, delivery_option_id]
-        );
-        await client.query("COMMIT");
-        res.json({message: "Order updated successfully"});
+        res.json({message: "Order was canceled successfully"});
     } catch (err) {
-        await client.query("ROLLBACK");
         console.log(err);
         res.status(400).json({error: err.message});
-    } finally {
-        client.release();
     }
 });
 

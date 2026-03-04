@@ -3,7 +3,7 @@ import github from "../assets/images/github.png";
 
 const Footer = () => {
     return (
-        <div className="relative bg-[#F0F0F0] w-full pt-47.5 sm:44 md:40 lg:37 xl:pt-35 pb-19 md:pb-20 lg:pb-22">
+        <div className="relative bg-[#F0F0F0] w-full pt-47.5 sm:44 md:40 lg:37 xl:pt-35 pb-19 md:pb-20 lg:pb-22 mt-52 sm:mt-48 md:mt-44 lg:mt-40">
             <div className="container">
                 <div className="max-w-310 mx-auto flex flex-wrap justify-between gap-x-20 gap-y-6 md:gap-y-8 lg:gap-y-10">
                     <div className="w-full lg:max-w-62.5">
@@ -55,4 +55,3 @@ const Footer = () => {
 }
 
 export default Footer;
-

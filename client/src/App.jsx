@@ -8,6 +8,8 @@ import ReviewForm from "./pages/ReviewForm.jsx";
 import EditReview from "./pages/EditReview.jsx";
 import Footer from "./components/Footer.jsx";
 import Cart from "./pages/Cart.jsx";
+import OrderForm from "./pages/OrderForm.jsx";
+import CheckoutWrapper from "./pages/CheckoutWrapper.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -62,11 +64,13 @@ function App() {
             <Route path="/products/:id" element={<ProductDetails user={user} setUser={setUser} categories={categories} />} />
             <Route path="/reviews/post/:id" element={<ReviewForm />} />
             <Route path="/reviews/put/:id" element={<EditReview />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/cart" element={<Cart user={user} setUser={setUser} categories={categories} />} />
+            <Route path="/checkout" element={<OrderForm />} />
+            <Route path="/checkout/:id/payment" element={<CheckoutWrapper />} />
         </Routes>
         <Footer />
       </>
   );
 }
 
-export default App
+export default App;

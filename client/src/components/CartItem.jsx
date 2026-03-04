@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import deleteBtn from "../assets/images/deleteBtn.png";
 import plus from "../assets/images/plus.svg";
 import minus from "../assets/images/minus.svg";
+import { Link } from "react-router-dom";
 
 const CartItem = ({quantities, setQuantities, setCartItems, item, index, cartItems}) => {
     const [error, setError] = useState("");
@@ -54,12 +55,16 @@ const CartItem = ({quantities, setQuantities, setCartItems, item, index, cartIte
                 <img className="cover" src={item.image_url} alt="product image" />
             </div>
             <div className="flex flex-1 flex-col justify-between">
+            <Link to={`/products/${item.id}`}>
                 <h5 className="max-sm:text-[14px]">{item.name}</h5>
+            </Link>
                 <span>Size: {item.size}</span>
                 <div className="flex gap-y-px gap-x-2 md:gap-x-3 flex-wrap">
                     <h4 className="max-sm:text-[16px]">${((item.price_cents - (item.price_cents * item.discount_percentage / 100)) / 100).toFixed(2)}</h4>
                     <h4 className="max-sm:text-[16px] text-gray-300 line-through">${(item.price_cents / 100).toFixed(2)}</h4>
-                    <span className="max-sm:p-1 p-2 text-center bg-red-100 text-red-600 rounded-2xl">{item.discount_percentage}%</span>
+                    {item.discount_percentage > 0 && (
+                        <span className="max-sm:p-1 p-2 text-center bg-red-100 text-red-600 rounded-2xl">{item.discount_percentage}%</span>
+                    )}
                 </div>
             </div>
             <div className="flex flex-col items-end justify-between">
