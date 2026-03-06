@@ -23,7 +23,7 @@ const CheckoutForm = ({orderId}) => {
                 setErrorMessage(data.error);
                 setTimeout(() => {
                     setErrorMessage("");
-                }, 1500);
+                }, 2500);
                 setIsProcessing(false);
                 return;
             }
@@ -31,7 +31,7 @@ const CheckoutForm = ({orderId}) => {
                 setIsProcessing(false);
                 navigate("/cart", {
                     state: {
-                        message: "Order was canceled successfully",
+                        message: "Your order has been canceled. If your cart doesn’t update automatically, please refresh the page",
                     },
                     replace: true,
                 });
@@ -48,7 +48,7 @@ const CheckoutForm = ({orderId}) => {
             setErrorMessage("Something went wrong, please try again");
             setTimeout(() => {
                 setErrorMessage("");
-            }, 1500);
+            }, 2500);
             return;
         }
         setIsProcessing(true);
@@ -62,28 +62,28 @@ const CheckoutForm = ({orderId}) => {
             setErrorMessage(error.message);
             setTimeout(() => {
                 setErrorMessage("");
-            }, 1500);
+            }, 2500);
         }
         setIsProcessing(false);
     }
 
     return (
         <div className="container min-h-screen flex justify-center items-center">
-            <form onSubmit={handleSubmit} className="w-auto sm:w-110 p-2 sm:p-3 md:p-4 lg:p-5 shadow">
+            <form onSubmit={handleSubmit} className="w-80 sm:w-110 p-2 sm:p-3 md:p-4 lg:p-5 shadow">
                 <h4 className="my-4 md:my-5 lg:my-6">Complete Payment</h4>
                 <PaymentElement />
                 {errorMessage && (
                     <span className="text-red-500 my-4 md:my-5 lg:my-6">{errorMessage}</span>
                 )}
-                <div className="flex gap-2 md:gap-3 my-4 md:my-5 lg:my-6">
+                <div className="flex flex-col sm:flex-row gap-2 md:gap-3 my-4 md:my-5 lg:my-6">
                     <button 
                         type="submit"
                         disabled={isProcessing || !stripe || !elements}
                         className="btn-dark disabled:cursor-not-allowed"
                     >
-                    {isProcessing ? "Processing..." : "Pay now"}
+                    {isProcessing ? "Processing.." : "Pay now"}
                     </button>
-                    <button disabled={isProcessing || !stripe || !elements} className="btn-dark" type="button disabled:cursor-not-allowed" onClick={handleCancel}>{isProcessing ? "Processing" : "Cancel"}</button>
+                    <button disabled={isProcessing || !stripe || !elements} className="btn-dark" type="button disabled:cursor-not-allowed" onClick={handleCancel}>{isProcessing ? "Processing.." : "Cancel"}</button>
                 </div>
             </form>
         </div>

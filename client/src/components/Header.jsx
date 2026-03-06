@@ -6,17 +6,18 @@ import chevronDown from "../assets/images/chevronDown.svg";
 import chevronUp from "../assets/images/chevronUp.svg";
 import search from "../assets/images/search.svg";
 import toggle from "../assets/images/toggle.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Search from "./Search";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 
-const Header = ({user, categories}) => {
+const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollToTrending}) => {
     const [navOpen, setNavOpen] = useState(false);
     const [shopOpen, setShopOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const shopRef = useRef(null);
     const searchRef = useRef(null);
     const inputRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleNav = () => {
         if (navOpen) {
@@ -38,6 +39,12 @@ const Header = ({user, categories}) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     },[shopOpen, searchOpen]);
 
+    const navToHome = () => {
+        if (location.pathname !== '/') {
+            navigate('/');
+        }
+    }
+
     return (
         <div className="relative container">
             <div className={`max-w-310 mx-auto flex justify-between items-center py-6 ${searchOpen?"pb-15 md:pb-18":""}`}>
@@ -45,13 +52,15 @@ const Header = ({user, categories}) => {
                     <button onClick={toggleNav} className="lg:hidden">
                         <img src={toggle} alt="menu toggle" />
                     </button>
-                    <img className="max-w-30 xl:max-w-40" src={logo} alt="logo" />
+                    <button onClick={navToHome}>
+                        <img className="max-w-30 xl:max-w-40" src={logo} alt="logo" />
+                    </button>
                 </div>
-                <div className={`${navOpen? "flex": "hidden"} lg:flex fixed top-17.5 left-0 right-0 bottom-0 bg-white lg:static z-10`}>
+                <div className={`${navOpen? "flex": "hidden"} lg:flex fixed top-17.5 left-0 right-0 bottom-0 bg-white lg:static z-50`}>
                     <ul className="flex flex-col lg:flex-row m-auto gap-6 lg:gap-4 xl:gap-6">
-                        <li ref={shopRef} className="relative mr-4 whitespace-nowrap">
-                            <a className="whitesapce-nowrap" href="#">Shop</a>
-                            <button className="absolute left-full top-1/2 -translate-y-1/2 size-4" onClick={() => setShopOpen(!shopOpen)}>
+                        <li ref={shopRef} onClick={() => setShopOpen(!shopOpen)} className="relative mr-4 whitespace-nowrap">
+                            <a className="whitesapce-nowrap cursor-pointer">Shop</a>
+                            <button className="absolute left-full top-1/2 -translate-y-1/2 size-4">
                                 {shopOpen? (
                                     <img src={chevronUp} alt="dropdown" />
                                 ): (
@@ -62,15 +71,15 @@ const Header = ({user, categories}) => {
                                 <ul className="absolute top-full left-0 bg-white z-10 flex flex-col gap-2 p-4">
                                     {categories.map((item) => {
                                         return (
-                                            <li key={item.id}><Link to={`/categories/${item.id}`}>{item.name}</Link></li>
+                                            <li key={item.id}><Link to={`/products/categories/${item.id}`}>{item.name}</Link></li>
                                         )
                                     })}
                                 </ul>
                             )}
                         </li>
-                        <li><a className="whitespace-nowrap" href="#">Top Selling</a></li>
-                        <li><a className="whitespace-nowrap" href="#">New Arrivals</a></li>
-                        <li><a className="whitespace-nowrap" href="#">Brands</a></li>
+                        <li onClick={scrollToTrending}><a className="cursor-pointer whitespace-nowrap">Top Selling</a></li>
+                        <li onClick={scrollToNewArrivals}><a className="cursor-pointer whitespace-nowrap">New Arrivals</a></li>
+                        <li onClick={scrollToBrands}><a className="cursor-pointer whitespace-nowrap">Brands</a></li>
                     </ul>
                 </div>
                 <div className="hidden lg:block w-[45%]">

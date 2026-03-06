@@ -10,6 +10,7 @@ import Footer from "./components/Footer.jsx";
 import Cart from "./pages/Cart.jsx";
 import OrderForm from "./pages/OrderForm.jsx";
 import CheckoutWrapper from "./pages/CheckoutWrapper.jsx";
+import Catalogue from "./pages/Catalogue.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -67,6 +68,7 @@ function App() {
             <Route path="/cart" element={<Cart user={user} setUser={setUser} categories={categories} />} />
             <Route path="/checkout" element={<OrderForm />} />
             <Route path="/checkout/:id/payment" element={<CheckoutWrapper />} />
+            <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} />} />
         </Routes>
         <Footer />
       </>

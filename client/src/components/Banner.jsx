@@ -1,7 +1,7 @@
 import banner from "../assets/images/banner.png";
 import bannerStar from "../assets/images/bannerStar.png";
 
-const Banner = () => {
+const Banner = ({scrollToCategories}) => {
     return (
         <div className="w-full bg-[#F0F0F0]" >
             <div className="container">
@@ -9,7 +9,7 @@ const Banner = () => {
                     <div className="max-w-78.75 md:max-w-100 lg:max-w-137 py-10 sm:py-12 md:py-15 xl:py-20 2xl:py-25">
                         <h1>FIND CLOTHES THAT MATCHES YOUR STYLE</h1>
                         <p className="my-8">Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.</p>
-                        <button className="btn-dark">Shop now</button>
+                        <button onClick={scrollToCategories} className="btn-dark">Shop now</button>
                         <div className="flex flex-wrap xl:flex-nowrap justify-center gap-4 lg:gap-6 w-full mt-12">
                             <div>
                                 <h2 className="font-satoshi">200+</h2>

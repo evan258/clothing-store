@@ -21,11 +21,12 @@ app.use(cors({
 nodeCron.schedule('*/5 * * * *', async () => {
     try {
         const {rows} = await pool.query(
-            `SELECT payment_intent_id FROM orders
+            `SELECT id, payment_intent_id FROM orders
             WHERE status = 'pending'
-            AND created_at < NOW() - INTERVAL '30 minutes'`,
+            AND created_at < NOW() - INTERVAL '15 minutes'`,
         );
         for (const order of rows) {
+            console.log(`from node cron orderId:${order.id}`);
             await stripe.paymentIntents.cancel(order.payment_intent_id);
         }
     } catch (err) {
@@ -44,6 +45,7 @@ app.post('/webhook', express.raw({type: "application/json"}), async (req, res) =
     }
     const payment_intent = event.data.object;
     const orderId = parseInt(payment_intent.metadata.order_id);
+    console.log(`from webhook orderId:${orderId}`);
     const userId = parseInt(payment_intent.metadata.user_id);
     if (event.type === "payment_intent.succeeded") {
         try {
@@ -680,6 +682,23 @@ app.get('/reviews', requireAuth, async (req, res) => {
     }
 });
 
+
+app.get('/highest/reviews', async (_req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT r.id, r.user_id, r.product_id, r.rating, r.review_text, r.created_at, u.user_name
+            FROM reviews r
+            JOIN users u ON u.id = r.user_id
+            ORDER BY r.rating DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: "Server error"});
+    }
+});
+
+
 app.get('/users/:id', async (req, res) => {
     try {
         const userId = req.params.id;
@@ -750,12 +769,12 @@ app.get('/me', requireAuth, async (req, res) => {
 app.get('/products/latest', async (_req, res) => {
     try {
         const productsResult = await pool.query(
-            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage,
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.created_at,
             AVG(r.rating) AS average_rating, COUNT(r.id) AS total_reviews
             FROM products p
-            LEFT JOIN reviews r ON r.productId = p.id
-            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage
-            ORDER BY created_at DESC LIMIT 6`
+            LEFT JOIN reviews r ON r.product_id = p.id
+            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.created_at
+            ORDER BY p.created_at DESC LIMIT 6`
         );
         res.json(productsResult.rows);
     } catch (err) {
@@ -767,12 +786,12 @@ app.get('/products/latest', async (_req, res) => {
 app.get('/products/trending', async (_req, res) => {
     try {
         const productsResult = await pool.query(
-            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage,
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.total_sold,
             AVG(r.rating) AS average_rating, COUNT(r.id) AS total_reviews
             FROM products p
-            LEFT JOIN reviews r ON r.productId = p.id
-            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage
-            ORDER BY total_sold DESC LIMIT 6`
+            LEFT JOIN reviews r ON r.product_id = p.id
+            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.total_sold
+            ORDER BY p.total_sold DESC LIMIT 6`
         );
         res.json(productsResult.rows);
     } catch (err) {
@@ -869,15 +888,25 @@ app.get('/products/:id/stock', async (req, res) => {
 app.get('/products/categories/:id', async (req, res) => {
     try {
         const categoryId = req.params.id;
+        const sort = req.query.sort;
+        let orderClause = "p.total_sold DESC";
+        if (sort === "popularity_lowest") {
+            orderClause = "p.total_sold ASC";
+        } else if (sort === "price_lowest") {
+            orderClause = "p.price_cents ASC";
+        } else if (sort === "price_highest") {
+            orderClause = "p.price_cents DESC";
+        }
         const productsResult = await pool.query(
-            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage,
-            AVG(r.rating) AS average_rating, COUNT(r.id) AS total_reviews
+            `SELECT p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.total_sold,
+            COALESCE(AVG(r.rating), 0) AS average_rating, COUNT(r.id) AS total_reviews
             from categories c
             JOIN products_categories pc ON pc.category_id = c.id
             JOIN products p ON p.id = pc.product_id
             LEFT JOIN reviews r ON r.product_id = p.id
             WHERE c.id = $1
-            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage`, [categoryId]
+            GROUP BY p.id, p.name, p.image_url, p.price_cents, p.discount_percentage, p.total_sold
+            ORDER BY ${orderClause}`, [categoryId]
         );
         res.json(productsResult.rows);
     } catch (err) {

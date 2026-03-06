@@ -21,12 +21,12 @@ const Cart = ({user, setUser, categories}) => {
             setError(location.state.error);
             setTimeout(() => {
                 setError("");
-            }, 1500);
+            }, 2500);
         } else if (location.state ?.message) {
             setMessage(location.state.message);
             setTimeout(() => {
                 setMessage("");
-            }, 1500);
+            }, 2500);
         }
         window.history.replaceState({}, document.title); // replace state so error doesn't show up on refresh
     }, [location]);
@@ -60,7 +60,7 @@ const Cart = ({user, setUser, categories}) => {
                     setError(cartData.message);
                     setTimeout(() => {
                         setError("");
-                    }, 1500);
+                    }, 2500);
                     return;
                 }
                 setCartItems(cartData || []);
@@ -75,7 +75,7 @@ const Cart = ({user, setUser, categories}) => {
                     setError(deliveryOptionsData.message);
                     setTimeout(() => {
                         setError("");
-                    }, 1500);
+                    }, 2500);
                     return;
                 }
                 setDeliveryOptions(deliveryOptionsData || []);
@@ -91,7 +91,7 @@ const Cart = ({user, setUser, categories}) => {
                 setError("Server error");
                 setTimeout(() => {
                     setError("");
-                }, 1500);
+                }, 2500);
             }
         }
         fetchCartDetails();

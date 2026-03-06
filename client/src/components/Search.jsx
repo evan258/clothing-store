@@ -74,8 +74,7 @@ const Search = ({inputRef}) => {
             {suggessions.length > 0 && (
                 <div className="fixed top-28 md:top-31 lg:top-24 left-0 right-0 bottom-0 bg-white z-10 overflow-y-scroll">
                     <div className="container border-t border-[#F0F0F0]">
-                        <div className={`max-w-max mx-auto grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-4 lg:gap-5 
-                        py-6 sm:py-10 md:py-13.5 lg:py-17.5 `}>
+                        <div className="max-w-max mx-auto grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 md:gap-4 lg:gap-5 py-6 sm:py-10 md:py-13.5 lg:py-17.5">
                             {suggessions.map((item) => {
                                 return (
                                     <Link onClick={handleClear} to={`/products/${item.id}`} key={item.id}>
@@ -87,13 +86,13 @@ const Search = ({inputRef}) => {
                                             </div>
                                             <h5>{item.name}</h5>
                                             <StarRating averageRating={parseFloat(item.average_rating)} />
-                                            <p>{`Rated by ${item.total_reviews} people`}</p>
-                                            <div className="flex gap-1 items-center flex-wrap">
+                                            <p className="pt-1 md:pt-1.5 lg:pt-2">{`Rated by ${item.total_reviews} people`}</p>
+                                            <div className="flex gap-1 md:gap-2 lg:gap-3 items-center flex-wrap">
                                                 <h4>{((item.price_cents - (item.price_cents * item.discount_percentage / 100))/100).toFixed(2)}</h4>
                                                 {item.discount_percentage > 0 && (
                                                     <>
                                                         <h4 className="text-[rgba(0,0,0,0.4)] line-through">{((item.price_cents)/100).toFixed(2)}</h4>
-                                                        <button className="rounded-[62px] bg-red-200 text-red-500 py-3 px-2">
+                                                        <button className="rounded-[62px] bg-red-200 text-red-500 py-2 px-2">
                                                             {`${item.discount_percentage}%`}
                                                         </button>
                                                     </>

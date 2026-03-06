@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react"
 
 
-const ReviewText = ({text}) => {
+const ReviewText = ({text, flag = false}) => {
     const [expanded, setExpanded] = useState(false);
     const [toggleNeeded, setToggleNeeded] = useState(false);
     const textRef = useRef(null);
@@ -18,7 +18,7 @@ const ReviewText = ({text}) => {
             <p 
                 ref={textRef} 
                 className={
-                    `relative ${expanded ? "line-clamp-none" : "line-clamp-4 lg:line-clamp-3"} 
+                    `relative text-[rgb(0,0,0,0.6)] ${expanded ? "line-clamp-none" : flag ? "line-clamp-6 lg:line-clamp-5" : "line-clamp-4 lg:line-clamp-3"} 
                     ${(!expanded && toggleNeeded) ? "after_line" : ""}`
                 }
             >

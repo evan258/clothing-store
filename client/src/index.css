@@ -17,7 +17,7 @@
         xl:leading-13.5 2xl:text-[64px] 2xl:leading-16 font-bold;
     }
     h2 {
-        @apply font-archivo text-[32px] md:text-[36px] lg:text-[40px] xl:text-[44px] 2xl:text-[48px] font-bold;
+        @apply font-archivo text-[32px] md:text-[36px] lg:text-[40px] xl:text-[44px] 2xl:text-[48px] font-bold leading-9 lg:leading-none;
     }
     h3 {
         @apply font-satoshi text-[24px] md:text-[28px] lg:text-[32px] font-bold;

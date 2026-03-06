@@ -32,7 +32,7 @@ const CheckoutWrapper = () => {
     }, [id]);
 
     return (
-        <div className="container">
+        <div className="container text-center">
             {error ? (
                 <h4>{error}</h4>
             ) : clientSecret ? (

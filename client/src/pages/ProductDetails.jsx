@@ -60,7 +60,6 @@ const ProductDetails = ({user, setUser, categories}) => {
     useEffect(() => {
         window.scrollTo({
             top: 0,
-            behavior: "smooth",
         });
     },[id]);
 
@@ -382,13 +381,13 @@ const ProductDetails = ({user, setUser, categories}) => {
                                             </div>
                                             <h5>{item.name}</h5>
                                             <StarRating averageRating={parseFloat(item.average_rating)} />
-                                            <p>{`Rated by ${item.total_reviews} people`}</p>
-                                            <div className="flex gap-1 items-center flex-wrap">
+                                            <p className="pt-1 md:pt-1.5 lg:pt-2">{`Rated by ${item.total_reviews} people`}</p>
+                                            <div className="flex gap-1 md:gap-2 lg:gap-3 items-center flex-wrap">
                                                 <h4>{((item.price_cents - (item.price_cents * item.discount_percentage / 100))/100).toFixed(2)}</h4>
                                                 {item.discount_percentage > 0 && (
                                                     <>
                                                         <h4 className="text-[rgba(0,0,0,0.4)] line-through">{((item.price_cents)/100).toFixed(2)}</h4>
-                                                        <button className="rounded-[62px] bg-red-200 text-red-500 py-3 px-2">
+                                                        <button className="rounded-[62px] bg-red-200 text-red-500 py-2 px-2">
                                                             {`${item.discount_percentage}%`}
                                                         </button>
                                                     </>

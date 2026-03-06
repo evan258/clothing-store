@@ -37,7 +37,7 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
                 setError(data.message);
                 setTimeout(() => {
                     setError("");
-                }, 1500);
+                }, 2500);
 
                 return;
             }
@@ -48,7 +48,7 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
                     setError(data.message);
                     setTimeout(() => {
                         setError("");
-                    }, 1500);
+                    }, 2500);
 
                     return;
                 }
@@ -58,13 +58,13 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
             setMessage("Review deleted successfully");
             setTimeout(() => {
                 setMessage("");
-            }, 1500);
+            }, 2500);
         } catch (err) {
             console.log(err);
             setError("Server error");
             setTimeout(() => {
                 setError("");
-            }, 1500);
+            }, 2500);
         }
     }
 
@@ -73,8 +73,8 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
             <span onClick={() => setOptionOpen(!optionOpen)}>...</span>
             {optionOpen && (
                 <div className="absolute top-full right-0 border bg-[#F0F0F0] flex flex-col">
-                    <button onClick={handleEdit} className="px-5 py-1.5 hover:bg-blue-600 hover:text-white w-full text-start">Edit</button>
-                    <button onClick={handleDelete} className="px-5 py-1.5 hover:bg-blue-600 hover:text-white w-full text-start">Delete</button>
+                    <button onClick={handleEdit} className="px-5 py-1.5 hover:bg-[#0078D7] hover:text-white w-full text-start">Edit</button>
+                    <button onClick={handleDelete} className="px-5 py-1.5 hover:bg-[#0078D7] hover:text-white w-full text-start">Delete</button>
                 </div>
             )}
         </div>
