@@ -23,7 +23,7 @@ const CheckoutForm = ({orderId}) => {
                 setErrorMessage(data.error);
                 setTimeout(() => {
                     setErrorMessage("");
-                }, 2500);
+                }, 5000);
                 setIsProcessing(false);
                 return;
             }
@@ -48,7 +48,7 @@ const CheckoutForm = ({orderId}) => {
             setErrorMessage("Something went wrong, please try again");
             setTimeout(() => {
                 setErrorMessage("");
-            }, 2500);
+            }, 5000);
             return;
         }
         setIsProcessing(true);
@@ -62,7 +62,7 @@ const CheckoutForm = ({orderId}) => {
             setErrorMessage(error.message);
             setTimeout(() => {
                 setErrorMessage("");
-            }, 2500);
+            }, 5000);
         }
         setIsProcessing(false);
     }

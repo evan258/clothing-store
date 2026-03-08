@@ -36,7 +36,7 @@ const OrderForm = () => {
             setError("Please fill all the fields");
             setTimeout(() => {
                 setError("");
-            }, 2500);
+            }, 5000);
             setIsSubmitting(false);
             return;
         }
@@ -59,7 +59,7 @@ const OrderForm = () => {
                 setError(data.error);
                 setTimeout(() => {
                     setError("");
-                }, 2500);
+                }, 5000);
                 setIsSubmitting(false);
                 return;
             }

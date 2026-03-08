@@ -6,7 +6,7 @@ import chevronDown from "../assets/images/chevronDown.svg";
 import chevronUp from "../assets/images/chevronUp.svg";
 import search from "../assets/images/search.svg";
 import toggle from "../assets/images/toggle.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "./Search";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 
@@ -18,16 +18,15 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
     const searchRef = useRef(null);
     const inputRef = useRef(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const toggleNav = () => {
+    useEffect(() => {
         if (navOpen) {
-            setNavOpen(false);
-            enablePageScroll();
-        } else {
-            setNavOpen(true);
             disablePageScroll();
+        } else {
+            enablePageScroll();
         }
-    }
+    }, [navOpen]);
 
     useEffect(() => {
         if (!shopOpen && !searchOpen) return;
@@ -49,7 +48,7 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
         <div className="relative container">
             <div className={`max-w-310 mx-auto flex justify-between items-center py-6 ${searchOpen?"pb-15 md:pb-18":""}`}>
                 <div className="flex gap-4 items-center">
-                    <button onClick={toggleNav} className="lg:hidden">
+                    <button onClick={() => setNavOpen(!navOpen)} className="lg:hidden">
                         <img src={toggle} alt="menu toggle" />
                     </button>
                     <button onClick={navToHome}>
@@ -77,9 +76,27 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
                                 </ul>
                             )}
                         </li>
-                        <li onClick={scrollToTrending}><a className="cursor-pointer whitespace-nowrap">Top Selling</a></li>
-                        <li onClick={scrollToNewArrivals}><a className="cursor-pointer whitespace-nowrap">New Arrivals</a></li>
-                        <li onClick={scrollToBrands}><a className="cursor-pointer whitespace-nowrap">Brands</a></li>
+                        <li onClick={() => {
+                                setNavOpen(false);
+                                scrollToTrending();
+                            }}
+                        >
+                            <a className="cursor-pointer whitespace-nowrap">Top Selling</a>
+                        </li>
+                        <li onClick={() => {
+                                setNavOpen(false);
+                                scrollToNewArrivals();
+                            }}
+                        >
+                            <a className="cursor-pointer whitespace-nowrap">New Arrivals</a>
+                        </li>
+                        <li onClick={() => {
+                                setNavOpen(false);
+                                scrollToBrands();
+                            }}
+                        >
+                            <a className="cursor-pointer whitespace-nowrap">Brands</a>
+                        </li>
                     </ul>
                 </div>
                 <div className="hidden lg:block w-[45%]">
@@ -107,7 +124,7 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
                             )}
                         </button>
                     </Link>
-                    <Link to={user? "/dashboard": "/Login"}>
+                    <Link to={user? `/dashboard/${user.id}`: "/Login"}>
                         <button className="size-6">
                             <img src={profile} alt="profile" />
                         </button>

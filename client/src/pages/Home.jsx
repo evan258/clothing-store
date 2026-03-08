@@ -4,31 +4,11 @@ import Brands from "../components/Brands.jsx";
 import ProductsBySort from "../components/ProductsBySort.jsx";
 import ProductsByCategories from "../components/ProductsByCategories.jsx";
 import HappyyCustomers from "../components/HappyCustomers.jsx";
-import { useEffect, useRef } from "react";
 
-const Home = ({user, categories}) => {
-    const brandsRef = useRef(null);
-    const newArrivalsRef = useRef(null);
-    const trendingRef = useRef(null);
-    const categoriesRef = useRef(null);
-
-    useEffect(() => {
-        window.scrollTo({
-            top: 0,
-        });
-    }, []);
-
-    const scrollToElement = (element) => {
-        if (element.current) {
-            element.current.scrollIntoView({
-                behavior: "smooth",
-                block: `${element === brandsRef? "center": "start"}`
-            });
-        }
-    }
+const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categoriesRef, reviewsRef, bannerRef, homeRef, scrollToElement}) => {
 
     return (
-       <div> 
+       <div ref={homeRef}> 
             <Header
                 user={user}
                 categories={categories}
@@ -36,9 +16,11 @@ const Home = ({user, categories}) => {
                 scrollToNewArrivals={() => scrollToElement(newArrivalsRef)}
                 scrollToTrending={() => scrollToElement(trendingRef)}
             />
-            <Banner
-                scrollToCategories={() => scrollToElement(categoriesRef)}
-            />
+            <div ref={bannerRef}>
+                <Banner
+                    scrollToCategories={() => scrollToElement(categoriesRef)}
+                />
+            </div>
             <div ref={brandsRef}>
                 <Brands />
             </div>
@@ -46,7 +28,9 @@ const Home = ({user, categories}) => {
             <div ref={categoriesRef}>
                 <ProductsByCategories />
             </div>
-            <HappyyCustomers />
+            <div ref={reviewsRef}>
+                <HappyyCustomers />
+            </div>
         </div>
     );
 }

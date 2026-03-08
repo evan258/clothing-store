@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom";
 
 
-const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => {
+const ReviewOptions = ({id, user, review, setReviews, setError, setMessage, flag=false}) => {
     const [optionOpen, setOptionOpen] = useState(false);
     const optionRef = useRef(null);
     const navigate = useNavigate(null);
@@ -37,18 +37,19 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
                 setError(data.message);
                 setTimeout(() => {
                     setError("");
-                }, 2500);
+                }, 5000);
 
                 return;
             }
             const fetchReviews = async () => {
-                const res = await fetch(`http://localhost:3000/products/${id}/reviews`);
+                const url = flag ? `http://localhost:3000/users/${id}/reviews` : `http://localhost:3000/products/${id}/reviews`;
+                const res = await fetch(url);
                 const data = await res.json();
                 if (!res.ok) {
                     setError(data.message);
                     setTimeout(() => {
                         setError("");
-                    }, 2500);
+                    }, 5000);
 
                     return;
                 }
@@ -58,13 +59,13 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage}) => 
             setMessage("Review deleted successfully");
             setTimeout(() => {
                 setMessage("");
-            }, 2500);
+            }, 5000);
         } catch (err) {
             console.log(err);
             setError("Server error");
             setTimeout(() => {
                 setError("");
-            }, 2500);
+            }, 5000);
         }
     }
 

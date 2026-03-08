@@ -99,7 +99,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
                     <div className="text-center">
                         <button 
                             onClick={() => setShowAllLatest(!showAllLatest)}
-                            className="btn-dark bg-white border text-black mb-10 md:mb-12 lg:mb-14 xl:mb-16"
+                            className="btn-dark bg-white border text-black mb-10 md:mb-12 lg:mb-14 xl:mb-16 hover:bg-black hover:text-white transition-colors duration-300"
                         >
                             {showAllLatest ? "View Less" : "View All"}
                         </button>
@@ -140,7 +140,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
                     <div className="text-center">
                         <button 
                             onClick={() => setShowAllTrending(!showAllTrending)}
-                            className="btn-dark bg-white border text-black mb-10 md:mb-12 lg:mb-14 xl:mb-16"
+                            className="btn-dark bg-white border text-black mb-10 md:mb-12 lg:mb-14 xl:mb-16 hover:bg-black hover:text-white transition-colors duration-300"
                         >
                             {showAllTrending ? "View Less" : "View All"}
                         </button>

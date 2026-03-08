@@ -5,6 +5,9 @@ import connectPgSimple from "connect-pg-simple";
 import bcrypt from "bcrypt";
 import Stripe from "stripe";
 import nodeCron from "node-cron";
+import { z } from "zod";
+import rateLimit from "express-rate-limit";
+import nodemailer from "nodemailer";
 import pool from "./db.js";
 
 const PORT = process.env.PORT;
@@ -18,12 +21,31 @@ app.use(cors({
     credentials: true
 }));
 
+const pgSession = connectPgSimple(session);
+
+app.use(
+    session({
+        store: new pgSession({
+            pool: pool,
+            tableName: "session"
+        }),
+        secret: process.env.SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            maxAge: 24 * 60 * 60 * 1000
+        }
+    })
+);
+
 nodeCron.schedule('*/5 * * * *', async () => {
     try {
         const {rows} = await pool.query(
             `SELECT id, payment_intent_id FROM orders
             WHERE status = 'pending'
-            AND created_at < NOW() - INTERVAL '15 minutes'`,
+            AND created_at < NOW() - INTERVAL '5 minutes'`,
         );
         for (const order of rows) {
             console.log(`from node cron orderId:${order.id}`);
@@ -106,24 +128,111 @@ app.post('/webhook', express.raw({type: "application/json"}), async (req, res) =
 
 app.use(express.json());
 
-const pgSession = connectPgSimple(session);
+const requireAuth = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.status(401).json({message: "Not logged in"});
+    }
+    next();
+}
 
-app.use(
-    session({
-        store: new pgSession({
-            pool: pool,
-            tableName: "session"
-        }),
-        secret: process.env.SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            secure: false,
-            maxAge: 24 * 60 * 60 * 1000
+const contactLimiter = rateLimit({
+    windowMs: 60* 60 * 1000,
+    max: 3,
+    message: {error: "Too many contact requests, Try again later"},
+});
+
+const contactSchema = z.object({
+    name: z.string().trim().min(2),
+    email: z.string().email(),
+    text: z.string().trim().min(10).max(100),
+    captchaToken: z.string()
+});
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+});
+
+app.post('/contact', requireAuth, contactLimiter, async (req, res) => {
+    try {
+        const result = contactSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json(result.error.flatten().fieldErrors);
         }
-    })
-);
+        const {name, email, text, captchaToken} = result.data;
+        const captchaRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`,
+        });
+        const captchaData = await captchaRes.json();
+        if (!captchaData.success) {
+            return res.status(400).json({error: "Captcha verification failed"});
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        req.session.email = email;
+        req.session.otp = otp;
+        req.session.expire = Date.now() + 5 * 60 * 1000;
+        req.session.text = text;
+        req.session.name = name;
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Your OTP code",
+            text: `Your verification code is ${otp}. It expires in 5 minutes`
+        });
+        res.json({message: "OTP sent to your email"});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({error: "Server error"});
+    }
+});
+
+app.post('/contact/verification', requireAuth, async (req, res) => {
+    const {otp} = req.body;
+    if (req.session.otp != otp) {
+        return res.status(401).json({error: "Invalid code"});
+    }
+    if (!req.session.expire || req.session.expire < Date.now()) {
+        return res.status(400).json({error: "OTP expired"});
+    }
+    const {name, email, text} = req.session;
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER,
+            replyTo: email,
+            subject: "New contact message",
+            text: `
+Name: ${name}
+Email: ${email}
+Message: ${text}
+`
+        });
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "We received your message!",
+            text: "Thanks for reaching out! We will get back to you soon."
+        });
+        req.session.otp = null;
+        req.session.expire = null;
+        req.session.email = null;
+        req.session.text = null;
+        req.session.name = null;
+
+        res.json({message: "Message sent successfully"});
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({error: "Failed to sent mail"});
+    }
+});
+
 
 app.post('/register', async (req, res) => {
     try {
@@ -181,13 +290,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({error: "Server error"});
     }
 });
-
-const requireAuth = (req, res, next) => {
-    if (!req.session.userId) {
-        return res.status(401).json({message: "Not logged in"});
-    }
-    next();
-}
 
 app.get('/delivery/options', async (_req, res) => {
     try {
@@ -397,12 +499,14 @@ app.get('/orders', requireAuth, async (req, res) => {
     const orders = {};
     try {
         const result = await pool.query(
-            `SELECT o.id, o.status, o.total_cents, o.phone, o.shipping_address, o.created_at, o.delivery_option_id,
-            oi.product_id, oi.size, oi.quantity
+            `SELECT o.id, o.status, o.total_cents, o.phone, o.shipping_address, o.created_at, d.estimated_days,
+            oi.product_id, oi.size, oi.quantity, p.name, p.image_url
             FROM orders o
             JOIN order_items oi ON oi.order_id = o.id
+            JOIN products p ON p.id = oi.product_id
+            JOIN delivery_options d ON d.id = o.delivery_option_id
             WHERE o.user_id = $1
-            ORDER BY created_at DESC`, [req.session.userId]
+            ORDER BY o.created_at DESC`, [req.session.userId]
         );
         for (let row of result.rows) {
             if (!orders[row.id]) {
@@ -413,17 +517,30 @@ app.get('/orders', requireAuth, async (req, res) => {
                     phone: row.phone,
                     shipping_address: row.shipping_address,
                     created_at: row.created_at,
-                    delivery_option_id: row.delivery_option_id,
-                    products: [],
+                    estimated_days: row.estimated_days,
+                    products: {},
                 }
             }
-            orders[row.id].products.push({
-                product_id: row.product_id,
+            if (!orders[row.id].products[row.product_id]) {
+                orders[row.id].products[row.product_id] = {
+                    product_id: row.product_id,
+                    name: row.name,
+                    image_url: row.image_url,
+                    sizes: []
+                }
+            }
+            orders[row.id].products[row.product_id].sizes.push({
                 size: row.size,
-                quantity: row.quantity,
+                quantity: row.quantity
             });
         }
-        res.json(Object.values(orders));
+        const formatted = Object.values(orders).map((order) => {
+            return {
+                ...order,
+                products: Object.values(order.products)
+            }
+        });
+        res.json(formatted);
     } catch (err) {
         console.log(err);
         res.status(500).json({error: "Server error"});
@@ -519,7 +636,7 @@ app.delete('/orders/:id', requireAuth, async (req, res) => {
             throw new Error("No order found");
         }
         const {status, payment_intent_id} = orderCheck.rows[0];
-        if (status !== 'pending') {
+        if (status !== 'confirmed') {
             throw new Error("Order cannot be canceled");
         }
         const itemsResult = await client.query(
@@ -664,16 +781,17 @@ app.get('/reviews/:id', async (req, res) => {
 })
 
 
-app.get('/reviews', requireAuth, async (req, res) => {
+app.get('/users/:id/reviews', async (req, res) => {
+    const userId = req.params.id;
     try {
         const result = await pool.query(
-            `SELECT id, r.user_id, r.product_id, r.rating, r.review_text, r.created_at, p.name AS product_name, p.image_url,
+            `SELECT r.id, r.product_id, r.rating, r.review_text, r.created_at, p.name AS product_name, p.image_url,
             p.price_cents, p.discount_percentage, u.user_name, u.email, u.created_at
             FROM reviews r
             JOIN products p ON p.id = r.product_id
             JOIN users u ON u.id = r.user_id
             WHERE r.user_id = $1
-            ORDER BY r.ceated_at DESC`,[req.session.userId]
+            ORDER BY r.created_at DESC`,[userId]
         );
         res.json(result.rows);
     } catch (err) {
@@ -699,18 +817,18 @@ app.get('/highest/reviews', async (_req, res) => {
 });
 
 
-app.get('/users/:id', async (req, res) => {
+app.get('/users', requireAuth, async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.session.userId;
         const userResult = await pool.query(
-            `SELECT user_name, email, created_at FROM users
+            `SELECT id, user_name, email, created_at FROM users
             WHERE id = $1`, [userId]
         );
         if (userResult.rows.length === 0) {
-            res.status(404).json({message: "No user found"});
+            return res.status(404).json({message: "No user found"});
         }
         const reviewsResult = await pool.query(
-            `SELECT id, r.rating, r.review_text, r.created_at, p.name AS product_name, p.image_url
+            `SELECT r.id, r.rating, r.review_text, r.created_at, p.name AS product_name, p.image_url
             FROM reviews r
             JOIN products p ON p.id = r.product_id
             WHERE r.user_id = $1
@@ -759,7 +877,7 @@ app.get('/me', requireAuth, async (req, res) => {
             WHERE c.user_id = $1`, [req.session.userId]
         );
         const cart_count = parseInt(cartCountResult.rows[0].cart_count, 10); // base 10
-        res.json({cart_count});
+        res.json({id: req.session.userId, cart_count});
     } catch (err) {
         console.log(err);
         res.status(500).json({error: "Server error"});
@@ -876,7 +994,7 @@ app.get('/products/:id/stock', async (req, res) => {
     try {
         const productId = req.params.id;
         const result = await pool.query(
-            "SELECT id, size, stock FROM product_variants WHERE product_id = $1", [productId]
+            "SELECT id, size, stock FROM product_variants WHERE product_id = $1 ORDER BY id", [productId]
         );
         res.json(result.rows);
     } catch (err) {

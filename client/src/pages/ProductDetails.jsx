@@ -27,6 +27,7 @@ const ProductDetails = ({user, setUser, categories}) => {
     const [related, setRelated] = useState([]);
     const navigate = useNavigate(null);
     const scrollRef = useRef(null);
+    const reviewsRef = useRef(null);
 
     const scroll = (direction) => {
         if (scrollRef.current && scrollRef.current.scrollWidth > scrollRef.current.clientWidth) {
@@ -56,13 +57,14 @@ const ProductDetails = ({user, setUser, categories}) => {
         if (totalPages !== currentPage) range.push(totalPages);
         return range;
     }
-    
-    useEffect(() => {
-        window.scrollTo({
-            top: 0,
-        });
-    },[id]);
 
+    useEffect(() => {
+        reviewsRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }, [currentPage]);
+    
     useEffect(() => {
         setQuantity(1);
         setCartError("");
@@ -297,7 +299,7 @@ const ProductDetails = ({user, setUser, categories}) => {
                         </button>
                     </div>
                 </div>
-                <div className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 justify-between max-w-310 mx-auto">
+                <div ref={reviewsRef} className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 justify-between max-w-310 mx-auto">
                     {currentPageReviews.map((review) => {
                         return (
                             <div key={review.id} className="p-5 sm:p-6 md:p-6.5 lg:p-7 rounded-[20px] border border-[rgba(0,0,0,0.1)]">

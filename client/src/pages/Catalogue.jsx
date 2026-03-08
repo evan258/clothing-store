@@ -18,20 +18,6 @@ const Catalogue = ({user, categories}) => {
     const [pendingOption, setPendingOption] = useState(option);
 
     useEffect(() => {
-        window.scrollTo({
-            top: 0,
-        });
-    }, []);
-    
-    useEffect(() => {
-        setPendingCategoryId(id);
-        setPendingOption(option);
-        window.scrollTo({
-            top: 0,
-        });
-    }, [id, option]);
-
-    useEffect(() => {
         if (sidebar) {
             disablePageScroll();
         } else {
@@ -58,7 +44,7 @@ const Catalogue = ({user, categories}) => {
     }, [id, option]);
 
     const handleApply = () => {
-        navigate(`/products/categories/${pendingCategoryId}?sort=${pendingOption}`, {replace: true});
+        navigate(`/products/categories/${pendingCategoryId}?sort=${pendingOption}`);
         setSidebar(false);
     }
 
