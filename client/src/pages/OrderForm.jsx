@@ -11,7 +11,7 @@ const OrderForm = () => {
     const navigate = useNavigate(null);
 
     if (!state) {
-        return <Navigate to="/cart" replace state={{error: "Please proceed from the cart to checkout"}} />; // replace the url
+        return <Navigate to="/cart" replace state={{error: "Please proceed from the cart to checkout"}} />;
     }
 
     const delivery_option_id = state.delivery_option_id;

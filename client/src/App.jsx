@@ -139,13 +139,13 @@ function App() {
             />
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/register" element={<Register setUser={setUser} />} />
-            <Route path="/products/:id" element={<ProductDetails user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />} />
+            <Route path="/products/:id" element={<ProductDetails user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
             <Route path="/reviews/post/:id" element={<ReviewForm />} />
             <Route path="/reviews/put/:id" element={<EditReview />} />
-            <Route path="/cart" element={<Cart user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />} />
+            <Route path="/cart" element={<Cart user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
             <Route path="/checkout" element={<OrderForm />} />
             <Route path="/checkout/:id/payment" element={<CheckoutWrapper />} />
-            <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />} />
+            <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
             <Route path="/contact" element={<ContactForm />} />
             <Route path="/contact/verification" element={<Verification />} />
             <Route path="/dashboard/:id" element={<Dashboard />} />

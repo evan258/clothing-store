@@ -11,7 +11,7 @@ import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
 import dayjs from "dayjs";
 
-const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef}) => {
+const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const { id } = useParams();
     const [productDetails, setProductDetails] = useState({});
     const [error, setError] = useState("");
@@ -188,7 +188,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
 
     return (
         <>
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />
+            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div className="container border-t border-[#F0F0F0] py-6 sm:py-10 md:py-13.5 lg:py-17.5">
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto">
                     <div className="w-78 sm:w-90 md:w-100 lg:w-111">

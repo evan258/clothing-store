@@ -33,9 +33,10 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
             <Header
                 user={user}
                 categories={categories}
-                scrollToBrands={() => scrollToElement(brandsRef)}
-                scrollToNewArrivals={() => scrollToElement(newArrivalsRef)}
-                scrollToTrending={() => scrollToElement(trendingRef)}
+                brandsRef={brandsRef}
+                newArrivalsRef={newArrivalsRef}
+                trendingRef={trendingRef}
+                scrollToElement={scrollToElement}
             />
             <div ref={bannerRef}>
                 <Banner

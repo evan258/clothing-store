@@ -10,7 +10,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "./Search";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 
-const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef}) => {
+const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const [navOpen, setNavOpen] = useState(false);
     const [shopOpen, setShopOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);

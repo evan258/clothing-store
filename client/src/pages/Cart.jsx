@@ -7,7 +7,7 @@ import superFast from "../assets/images/superFast.png";
 import { useLocation } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
 
-const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef}) => {
+const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const [cartItems, setCartItems] = useState([]);
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -28,7 +28,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                 setMessage("");
             }, 5000);
         }
-        window.history.replaceState({}, document.title); // replace state so error doesn't show up on refresh
+        window.history.replaceState({}, document.title);
     }, [location]);
 
     const selectedDeliveryOption = deliveryOptions.find((opt) => opt.id === selectedDeliveryId);
@@ -99,7 +99,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
 
     return (
         <>
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />
+            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5">
                 <div className="max-w-310 mx-auto">
                     <h2 className="pb-5 md:pb-6">YOUR CART</h2>
