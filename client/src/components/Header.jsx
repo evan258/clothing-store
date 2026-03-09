@@ -10,7 +10,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "./Search";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 
-const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollToTrending}) => {
+const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef}) => {
     const [navOpen, setNavOpen] = useState(false);
     const [shopOpen, setShopOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
@@ -41,6 +41,22 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
     const navToHome = () => {
         if (location.pathname !== '/') {
             navigate('/');
+        }
+    }
+
+    const goToSection = (section) => {
+        if (location.pathname === '/') {
+            let ref;
+            if (section === "newArrivals") ref = newArrivalsRef;
+            else if (section === "trending") ref = trendingRef;
+            else if (section === "brands") ref = brandsRef;
+            scrollToElement(ref);
+        } else {
+            navigate('/', {
+                state: {
+                    scrollTo: section
+                }
+            });
         }
     }
 
@@ -78,21 +94,21 @@ const Header = ({user, categories, scrollToBrands, scrollToNewArrivals, scrollTo
                         </li>
                         <li onClick={() => {
                                 setNavOpen(false);
-                                scrollToTrending();
+                                goToSection("trending");
                             }}
                         >
                             <a className="cursor-pointer whitespace-nowrap">Top Selling</a>
                         </li>
                         <li onClick={() => {
                                 setNavOpen(false);
-                                scrollToNewArrivals();
+                                goToSection("newArrivals");
                             }}
                         >
                             <a className="cursor-pointer whitespace-nowrap">New Arrivals</a>
                         </li>
                         <li onClick={() => {
                                 setNavOpen(false);
-                                scrollToBrands();
+                                goToSection("brands");
                             }}
                         >
                             <a className="cursor-pointer whitespace-nowrap">Brands</a>
