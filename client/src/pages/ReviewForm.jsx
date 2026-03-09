@@ -22,7 +22,7 @@ const ReviewForm = () => {
                 },
                 body: JSON.stringify({
                     product_id: id,
-                    rating: rating,
+                    rating: Number(rating),
                     review_text: description,
                 }),
                 credentials: "include",
@@ -52,7 +52,7 @@ const ReviewForm = () => {
                         id="rating-field" 
                         type="number" 
                         value={rating}
-                        onChange={(e) => setRating(Number(e.target.value))} 
+                        onChange={(e) => setRating(e.target.value)} 
                         placeholder="Select a rating between 1 and 5"
                         className={`w-full my-4 outline-none bg-white rounded-2xl p-2
                             ${invalid ? "border-red-600" : "border-black"}

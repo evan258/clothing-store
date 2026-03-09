@@ -55,7 +55,7 @@ const Login = ({setUser}) => {
             });
             const userData = await userRes.json();
             setUser(userData);
-            navigate('/dashboard');
+            navigate(`/dashboard/${userData.id}`);
         } catch (err) {
             console.log(err);
             setError("Server error");
