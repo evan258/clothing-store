@@ -28,7 +28,7 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage, flag
 
     const handleDelete = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/reviews/${review.id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/reviews/${review.id}`, {
                 method: "DELETE",
                 credentials: "include",
             });
@@ -42,7 +42,7 @@ const ReviewOptions = ({id, user, review, setReviews, setError, setMessage, flag
                 return;
             }
             const fetchReviews = async () => {
-                const url = flag ? `http://localhost:3000/users/${id}/reviews` : `http://localhost:3000/products/${id}/reviews`;
+                const url = flag ? `${import.meta.env.VITE_API_URL}/users/${id}/reviews` : `${import.meta.env.VITE_API_URL}/products/${id}/reviews`;
                 const res = await fetch(url);
                 const data = await res.json();
                 if (!res.ok) {

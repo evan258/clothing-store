@@ -15,7 +15,7 @@ const CheckoutWrapper = () => {
     useEffect(() => {
         const fetchClientSecret = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/checkout/${id}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/checkout/${id}`, {
                     credentials: 'include',
                 });
                 const data = await res.json();

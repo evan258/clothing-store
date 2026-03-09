@@ -13,7 +13,7 @@ const EditReview = () => {
     useEffect(() => {
         const fetchReview = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/reviews/${id}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/reviews/${id}`);
                 const data = await res.json();
                 if (res.ok) {
                     setRating(data.rating);
@@ -35,7 +35,7 @@ const EditReview = () => {
             return;
         }
         try {
-            const res = await fetch(`http://localhost:3000/reviews/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/reviews/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

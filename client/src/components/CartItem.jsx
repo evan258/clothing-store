@@ -13,7 +13,7 @@ const CartItem = ({quantities, setQuantities, setCartItems, item, index, cartIte
         setError("");
         setMessage("");
         try {
-            const res = await fetch("http://localhost:3000/cart", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

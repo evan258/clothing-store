@@ -24,7 +24,7 @@ const Search = ({inputRef}) => {
             return;
         }
         try {
-            const res = await fetch(`http://localhost:3000/products/search?q=${debouncedQuery}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/search?q=${debouncedQuery}`);
             const data = await res.json();
             setSuggessions(data || []);
         } catch (err) {

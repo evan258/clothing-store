@@ -52,7 +52,7 @@ const Cart = ({user, setUser, categories}) => {
     useEffect(() => {
         const fetchCartDetails = async () => {
             try {
-                const cartRes = await fetch("http://localhost:3000/cart", {
+                const cartRes = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
                     credentials: "include",
                 });
                 const cartData = await cartRes.json();
@@ -69,7 +69,7 @@ const Cart = ({user, setUser, categories}) => {
                     qtyMap[`${item.id}-${item.size}`] = item.quantity;
                 });
                 setQuantities(qtyMap);
-                const deliveryOptionRes = await fetch("http://localhost:3000/delivery/options");
+                const deliveryOptionRes = await fetch(`${import.meta.env.VITE_API_URL}/delivery/options`);
                 const deliveryOptionsData = await deliveryOptionRes.json();
                 if (!deliveryOptionRes.ok) {
                     setError(deliveryOptionsData.message);
@@ -82,7 +82,7 @@ const Cart = ({user, setUser, categories}) => {
                 if (deliveryOptionsData.length) {
                     setSelectedDeliveryId(deliveryOptionsData[0].id);
                 }
-                const userRes = await fetch("http://localhost:3000/me", {
+                const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
                     credentials: "include",
                 });
                 const userData = await userRes.json();

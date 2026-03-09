@@ -32,7 +32,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
     useEffect(() => {
         const fetchLatest = async () => {
             try {
-                const res = await fetch("http://localhost:3000/products/latest");
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/products/latest`);
                 const data = await res.json();
                 if (!res.ok) {
                     console.log(data.error);
@@ -46,7 +46,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
 
         const fetchTrending = async () => {
             try {
-                const res = await fetch("http://localhost:3000/products/trending");
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/products/trending`);
                 const data = await res.json();
                 if (!res.ok) {
                     console.log(data.error);

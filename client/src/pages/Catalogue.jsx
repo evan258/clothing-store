@@ -28,7 +28,7 @@ const Catalogue = ({user, categories}) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/products/categories/${id}?sort=${option}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/products/categories/${id}?sort=${option}`);
                 const data = await res.json();
                 if (!res.ok) {
                     console.log(data.error);

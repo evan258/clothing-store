@@ -14,7 +14,7 @@ const CheckoutForm = ({orderId}) => {
         setIsProcessing(true);
         setErrorMessage("");
         try {
-            const res = await fetch(`http://localhost:3000/cancel/${orderId}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/cancel/${orderId}`, {
                 method: "DELETE",
                 credentials: "include",
             });

@@ -13,7 +13,7 @@ const HappyCustomers = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const res = await fetch("http://localhost:3000/highest/reviews");
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/highest/reviews`);
                 const data = await res.json();
                 if (!res.ok) {
                     console.log(data.message);

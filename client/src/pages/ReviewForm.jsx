@@ -15,7 +15,7 @@ const ReviewForm = () => {
             return;
         }
         try {
-            const res = await fetch("http://localhost:3000/reviews", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/reviews`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

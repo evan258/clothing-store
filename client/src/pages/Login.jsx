@@ -37,7 +37,7 @@ const Login = ({setUser}) => {
         }
         setError("");
         try {
-            const res = await fetch("http://localhost:3000/login", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -50,7 +50,7 @@ const Login = ({setUser}) => {
                 setError(data.error);
                 return;
             }
-            const userRes = await fetch("http://localhost:3000/me", {
+            const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
                 credentials: 'include',
             });
             const userData = await userRes.json();

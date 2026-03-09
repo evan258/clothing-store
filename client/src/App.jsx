@@ -87,7 +87,7 @@ function App() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch('http://localhost:3000/me', {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
                     credentials: 'include',
                 });
                 if (!res.ok) {
@@ -105,7 +105,7 @@ function App() {
         }
         const fetchCategories = async () => {
             try {
-                const res = await fetch("http://localhost:3000/categories");
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
                 if (!res.ok) {
                     setCategories(null);
                     return;

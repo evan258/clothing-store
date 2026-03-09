@@ -46,7 +46,7 @@ const Dashboard = () => {
 
     const fetchOrderDetails = async () => {
         try {
-            const res = await fetch("http://localhost:3000/orders", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
                 credentials: "include",
             });
             const data = await res.json();
@@ -69,7 +69,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchUserDetails = async () => {
             try {
-                const res = await fetch("http://localhost:3000/users", {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
                     credentials: "include"
                 });
                 const data = await res.json();
@@ -96,7 +96,7 @@ const Dashboard = () => {
 
     const handleCancel = async (id) => {
         try {
-            const res = await fetch(`http://localhost:3000/orders/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/orders/${id}`, {
                 method: "DELETE",
                 credentials: "include"
             });

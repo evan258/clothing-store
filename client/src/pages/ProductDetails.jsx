@@ -73,7 +73,7 @@ const ProductDetails = ({user, setUser, categories}) => {
 
     useEffect(() => {
         const fetchProductDetails = async () => {
-            const res = await fetch(`http://localhost:3000/products/${id}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
             const data = await res.json();
             if (!res.ok) {
                 setError(data.message);
@@ -82,7 +82,7 @@ const ProductDetails = ({user, setUser, categories}) => {
             setProductDetails(data || null);
         }
         const fetchStocks = async () => {
-            const res = await fetch(`http://localhost:3000/products/${id}/stock`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}/stock`);
             const data = await res.json();
             if (!res.ok) {
                 setError(data.message);
@@ -91,7 +91,7 @@ const ProductDetails = ({user, setUser, categories}) => {
             setStocks(data || []);
         }
         const fetchReviews = async () => {
-            const res = await fetch(`http://localhost:3000/products/${id}/reviews`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}/reviews`);
             const data = await res.json();
             if (!res.ok) {
                 setError(data.message);
@@ -100,7 +100,7 @@ const ProductDetails = ({user, setUser, categories}) => {
             setReviews(data || []);
         }
         const fetchRelated = async () => {
-            const res = await fetch(`http://localhost:3000/products/${id}/related`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}/related`);
             const data = await res.json();
             if (!res.ok) {
                 setError(data.message);
@@ -136,7 +136,7 @@ const ProductDetails = ({user, setUser, categories}) => {
         }
 
         try {
-            const res = await fetch("http://localhost:3000/cart", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const ProductDetails = ({user, setUser, categories}) => {
                 return;
             }
             setCartMessage("Item Added to the cart");
-            const userRes = await fetch("http://localhost:3000/me", {
+            const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
                 credentials: "include",
             });
             const userData = await userRes.json();
@@ -167,7 +167,7 @@ const ProductDetails = ({user, setUser, categories}) => {
 
     useEffect(() => {
         const fetchReviewsByOption = async () => {
-            const res = await fetch(`http://localhost:3000/products/${id}/reviews?sort=${option}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}/reviews?sort=${option}`);
             const data = await res.json();
                 if (!res.ok) {
                     setError(data.message);
