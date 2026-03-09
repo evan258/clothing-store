@@ -16,7 +16,7 @@ const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
