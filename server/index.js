@@ -10,7 +10,7 @@ import rateLimit from "express-rate-limit";
 import nodemailer from "nodemailer";
 import pool from "./db.js";
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -23,6 +23,8 @@ app.use(cors({
 
 const pgSession = connectPgSimple(session);
 
+app.set("trust proxy", 1);
+
 app.use(
     session({
         store: new pgSession({
@@ -34,7 +36,7 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === "production",
             maxAge: 24 * 60 * 60 * 1000
         }
     })
