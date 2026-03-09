@@ -1,14 +1,39 @@
 import logo from "../assets/images/logo.png";
 import github from "../assets/images/github.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const Footer = ({brandsRef, reviewsRef, bannerRef, scrollToElement, scrollToTop}) => {
+const Footer = ({user, brandsRef, reviewsRef, bannerRef, scrollToElement, scrollToTop}) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const goToSection = (section) => {
+        if (location.pathname === '/') {
+            let ref;
+            if (section === "banner") ref = bannerRef;
+            else if (section === "reviews") ref = reviewsRef;
+            else if (section === "brands") ref = brandsRef;
+            scrollToElement(ref);
+        } else {
+            navigate('/', {
+                state: {
+                    scrollTo: section
+                }
+            });
+        }
+    }
+
     return (
         <div className="relative bg-[#F0F0F0] w-full pt-47.5 sm:44 md:40 lg:37 xl:pt-35 pb-19 md:pb-20 lg:pb-22 mt-52 sm:mt-48 md:mt-44 lg:mt-40">
             <div className="container">
                 <div className="max-w-310 mx-auto flex flex-wrap justify-between gap-x-20 gap-y-6 md:gap-y-8 lg:gap-y-10">
                     <div className="w-full lg:max-w-62.5">
-                        <img onClick={scrollToTop} className="cursor-pointer" src={logo} alt="logo" />
+                        <img 
+                            onClick={() => {
+                                if (location.pathname === '/') scrollToTop();
+                                else navigate('/');
+                            }} 
+                            className="cursor-pointer" src={logo} alt="logo" 
+                        />
                         <p className="pt-3.5 pb-5 md:pt-4.5 md:pb-6.5 lg:pt-6 lg:pb-8 text-[rgba(0,0,0,0.6)] xl:text-[14px]">We have clothes that suits your style and which you’re proud to wear. From women to men.</p>
                         <a href="https://github.com/evan258/Ecommerce-page" target="_blank">
                             <img src={github} alt="link" />
@@ -17,9 +42,9 @@ const Footer = ({brandsRef, reviewsRef, bannerRef, scrollToElement, scrollToTop}
                     <div>
                         <h5 className="font-medium leading-4.5 text-[14px] tracking-[3px] md:text-[15px] lg:text-[16px]">Company</h5>
                         <ul className="flex flex-col text-[rgba(0,0,0,0.6)] pt-4 md:pt-5 lg:pt-6 gap-1 md:gap-1.5 lg:gap-2">
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => scrollToElement(bannerRef)}>About</a></li>
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => scrollToElement(reviewsRef)}>Reviews</a></li>
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => scrollToElement(brandsRef)}>Brands</a></li>
+                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("banner")}>About</a></li>
+                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("reviews")}>Reviews</a></li>
+                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("brands")}>Brands</a></li>
                         </ul>
                     </div>
                     <div>
@@ -31,8 +56,8 @@ const Footer = ({brandsRef, reviewsRef, bannerRef, scrollToElement, scrollToTop}
                     <div>
                         <h5 className="font-medium leading-4.5 text-[14px] tracking-[3px] md:text-[15px] lg:text-[16px]">FAQ</h5>
                         <ul className="flex flex-col text-[rgba(0,0,0,0.6)] pt-4 md:pt-5 lg:pt-6 gap-1 md:gap-1.5 lg:gap-2">
-                            <li><Link className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px]" to="/dashboard">Account</Link></li>
-                            <li><Link className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px]" to="/dashboard" href="#">Orders</Link></li>
+                            <li><Link className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px]" to={user? `/dashboard/${user.id}`: "/login"}>Account</Link></li>
+                            <li><Link className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px]" to={user? `/dashboard/${user.id}`: "/login"}>orders</Link></li>
                         </ul>
                     </div>
                     <div>

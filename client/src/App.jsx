@@ -154,13 +154,14 @@ function App() {
             <Route path="/contact/verification" element={<Verification />} />
             <Route path="/dashboard/:id" element={<Dashboard />} />
         </Routes>
-        <Footer 
-          brandsRef={brandsRef}
-          reviewsRef={reviewsRef}
-          bannerRef={bannerRef}
-          scrollToElement={scrollToElement}
-          scrollToTop={scrollToTop}
-        />
+        <Footer
+                user={user}
+                brandsRef={brandsRef}
+                reviewsRef={reviewsRef}
+                bannerRef={bannerRef}
+                scrollToElement={scrollToElement}
+                scrollToTop={scrollToTop}
+            />
       </>
   );
 }

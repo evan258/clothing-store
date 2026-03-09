@@ -4,8 +4,22 @@ import Brands from "../components/Brands.jsx";
 import ProductsBySort from "../components/ProductsBySort.jsx";
 import ProductsByCategories from "../components/ProductsByCategories.jsx";
 import HappyyCustomers from "../components/HappyCustomers.jsx";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categoriesRef, reviewsRef, bannerRef, homeRef, scrollToElement}) => {
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.scrollTo) {
+            let ref;
+            if (location.state.scrollTo === "banner") ref = bannerRef;
+            else if (location.state.scrollTo === "reviews") ref = reviewsRef;
+            else if (location.state.scrollTo === "brands") ref = brandsRef;
+            scrollToElement(ref);
+        }
+        window.history.replaceState({}, document.title);
+    }, [location]);
 
     return (
        <div ref={homeRef}> 
