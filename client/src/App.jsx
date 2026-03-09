@@ -21,10 +21,6 @@ function App() {
     const location = useLocation();
     const navType = useNavigationType();
 
-    if ("scrollRestoration" in window.history) {
-        window.history.scrollRestoration = "manual";
-    }
-
     useEffect(() => {
         if (navType === "POP") {
             const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
@@ -34,7 +30,7 @@ function App() {
                         top: parseInt(savedY, 10),
                         behavior: "instant"
                     });
-                }, 100);
+                }, 500);
                 return;
             }
         }
