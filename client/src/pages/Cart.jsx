@@ -6,8 +6,9 @@ import fast from "../assets/images/fast.png";
 import superFast from "../assets/images/superFast.png";
 import { useLocation } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
+import Footer from "../components/Footer";
 
-const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
     const [cartItems, setCartItems] = useState([]);
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -95,25 +96,35 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
             }
         }
         fetchCartDetails();
-    }, [cartItems]);
+    }, []);
 
-    const cl = 120 * cartItems.length;
-    const clmd = 135 * cartItems.length;
-    const cllg = 150 * cartItems.length;
-    const os = 130 + (cartItems.length ? 344 + 287 : 0);
-    const mdos = 150 + (cartItems.length ? 391 : 0);
-    const lgos = 170 + (cartItems.length ? 436 + 393 : 0);
-    const min_h = cl + os;
-    const md_min_h = clmd + mdos;
-    const lg_min_h = Math.max(cllg, lgos);
-    const currentHeight = window.innerWidth >= 1024 ? lg_min_h : (window.innerWidth >= 768 ? md_min_h : min_h);
+    const headerFooter = 510 + 77;
+    const headerFooterMd = 540 + 77;
+    const headerFooterLg = 446 + 93;
+    const headerFooterXl = 396 + 96;
+    const max320cartLen = 200 * cartItems.length;
+    const max400cartLen = 140 * cartItems.length;
+    const cartLen = 140 * cartItems.length;
+    const cartLenMd = 140 * cartItems.length;
+    const cartLenLg = 170 * cartItems.length;
+    const orderSummaryLen = 130 + (cartItems.length ? 344 + 287 : 0);
+    const orderSummaryLenMd = 150 + (cartItems.length ? 391 : 0);
+    const orderSummaryLenLg = 150 + (cartItems.length ? 456 + 383 : 0);
+    const max_320_min_h = max320cartLen + orderSummaryLen + headerFooter + 300;
+    const max_400_min_h = max400cartLen + orderSummaryLen + headerFooter + 100;
+    const min_h = cartLen + orderSummaryLen + headerFooter + 150;
+    const md_min_h = cartLenMd + orderSummaryLenMd + headerFooterMd + 200;
+    const lg_min_h = Math.max(cartLenLg, orderSummaryLenLg) + headerFooterLg + 100;
+    const xl_min_h = Math.max(cartLenLg, orderSummaryLenLg) + headerFooterXl;
+    const currentHeight = window.innerWidth >= 1280 ? xl_min_h : (window.innerWidth >= 1024 ? lg_min_h : (window.innerWidth >= 768 ? md_min_h : (window.innerWidth >= 640 ? min_h : (window.innerWidth >= 400 ? max_400_min_h : max_320_min_h))));
 
     return (
-        <>
+        <div
+            style={{minHeight: `${currentHeight}px`}}
+        >
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div
                 className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5"
-                style={{minHeight: `${currentHeight}px`}}
             >
                 <div className="max-w-310 mx-auto">
                     <h2 className="pb-5 md:pb-6">YOUR CART</h2>
@@ -121,7 +132,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                         <div className="max-h-max col-span-3 lg:col-span-2 flex flex-col gap-4 md:gap-5 lg:gap-6 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
                             {cartItems.map((item, index) => {
                                 return (
-                                    <CartItem key={`${item.id}-${item.size}`} quantities={quantities} setQuantities={setQuantities} setCartItems={setCartItems} item={item} index={index} cartItems={cartItems} />
+                                    <CartItem key={`${item.id}-${item.size}`} setUser={setUser} quantities={quantities} setQuantities={setQuantities} setCartItems={setCartItems} item={item} index={index} cartItems={cartItems} />
                                 )
                             })}
                         </div>
@@ -175,7 +186,15 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                     </div>
                 </div>
             </div>
-        </>
+            <Footer
+                user={user}
+                brandsRef={brandsRef}
+                reviewsRef={reviewsRef}
+                bannerRef={bannerRef}
+                scrollToElement={scrollToElement}
+                scrollToTop={scrollToTop}
+            />
+        </div>
     )
 }
 

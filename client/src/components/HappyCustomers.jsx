@@ -39,7 +39,7 @@ const HappyCustomers = () => {
     }
 
     return (
-        <div className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20 min-h-87 sm:min-h-94 md:min-h-98.25 lg:min-h-107.75 xl:min-h-110.75">
+        <div className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20">
             <div className="max-w-310 mx-auto">
                 <div className="flex justify-between items-end">
                     <h2>OUR HAPPY CUSTOMERS</h2>

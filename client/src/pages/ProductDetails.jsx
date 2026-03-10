@@ -10,8 +10,9 @@ import plus from "../assets/images/plus.svg";
 import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
 import dayjs from "dayjs";
+import Footer from "../components/Footer";
 
-const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
     const { id } = useParams();
     const [productDetails, setProductDetails] = useState({});
     const [error, setError] = useState("");
@@ -27,7 +28,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     const [related, setRelated] = useState([]);
     const navigate = useNavigate(null);
     const scrollRef = useRef(null);
-    const reviewsRef = useRef(null);
+    const localReviewsRef = useRef(null);
     const isFirstRender = useRef(true);
 
     const scroll = (direction) => {
@@ -64,7 +65,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
             isFirstRender.current = false;
             return;
         }
-        reviewsRef.current.scrollIntoView({
+        localReviewsRef.current.scrollIntoView({
             behavior: "instant",
             block: "center"
         });
@@ -190,20 +191,24 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
         }
         navigate(`/reviews/post/${productDetails.id}`);
     }
-
-    const h = 1047 + (related.length ? 296 : 0) + (reviews.length > 4 ? 218 * 4 : 218 * reviews.length);
-    const hsm = 1129 + (related.length ? 290 : 0) + (reviews.length > 4 ? 214 * 4 : 214 * reviews.length);
-    const hmd = 1425 + (related.length ? 329 : 0) + (reviews.length > 0 ? 233 : 0) + (reviews.length > 2 ? 252 : 0);
-    const hlg = 1134 + (related.length ? 354 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0);
-    const hxl = 1161 + (related.length ? 397 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0);
+    const headerFooter = 510 + 77;
+    const headerFooterMd = 540 + 77;
+    const headerFooterLg = 446 + 93;
+    const headerFooterXl = 396 + 96;
+    const h = 1047 + (related.length ? 296 : 0) + (reviews.length > 4 ? 218 * 4 : 218 * reviews.length) + headerFooter + 200;
+    const hsm = 1129 + (related.length ? 290 : 0) + (reviews.length > 4 ? 214 * 4 : 214 * reviews.length) + headerFooter + 170;
+    const hmd = 1425 + (related.length ? 329 : 0) + (reviews.length > 0 ? 233 : 0) + (reviews.length > 2 ? 252 : 0) + headerFooterMd + 150;
+    const hlg = 1134 + (related.length ? 354 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0) + headerFooterLg + 150;
+    const hxl = 1161 + (related.length ? 397 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0) + headerFooterXl + 150;
     const curretHeight = window.innerWidth >= 1280 ? hxl : (window.innerWidth >= 1024 ? hlg : (window.innerWidth >= 768 ? hmd : (window.innerWidth >= 640 ? hsm : h)));
 
     return (
-        <>
+        <div
+            style={{minHeight: `${curretHeight}px`}}
+        >
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div
                 className="container border-t border-[#F0F0F0] py-6 sm:py-10 md:py-13.5 lg:py-17.5"
-                style={{minHeight: `${curretHeight}px`}}
             >
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto">
                     <div className="w-78 sm:w-90 md:w-100 lg:w-111">
@@ -314,7 +319,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
                         </button>
                     </div>
                 </div>
-                <div ref={reviewsRef} className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 justify-between max-w-310 mx-auto">
+                <div ref={localReviewsRef} className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 justify-between max-w-310 mx-auto">
                     {currentPageReviews.map((review) => {
                         return (
                             <div key={review.id} className="p-5 sm:p-6 md:p-6.5 lg:p-7 rounded-[20px] border border-[rgba(0,0,0,0.1)]">
@@ -426,7 +431,15 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
                     </div>
                 )}
             </div>
-        </>
+            <Footer
+                user={user}
+                brandsRef={brandsRef}
+                reviewsRef={reviewsRef}
+                bannerRef={bannerRef}
+                scrollToElement={scrollToElement}
+                scrollToTop={scrollToTop}
+            />
+        </div>
     )
 }
 

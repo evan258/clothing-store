@@ -4,7 +4,7 @@ import plus from "../assets/images/plus.svg";
 import minus from "../assets/images/minus.svg";
 import { Link } from "react-router-dom";
 
-const CartItem = ({quantities, setQuantities, setCartItems, item, index, cartItems}) => {
+const CartItem = ({setUser, quantities, setQuantities, setCartItems, item, index, cartItems}) => {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const alertRef = useRef(null);
@@ -27,6 +27,7 @@ const CartItem = ({quantities, setQuantities, setCartItems, item, index, cartIte
                 return;
             }
             setCartItems(data || []);
+            setUser(prev => ({...prev, cart_count: data.length}));
             setMessage("Cart updated successfully");
         } catch (err) {
             setError("Server error");
