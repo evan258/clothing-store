@@ -1048,7 +1048,7 @@ app.get('/categories', async (_req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/logout', requireAuth, (req, res) => {
     if (!req.session) {
         return res.status(400).json({message: "No session found"});
     }
@@ -1057,10 +1057,17 @@ app.get('/logout', (req, res) => {
             console.log(err);
             return res.status(500).json({message: "Could not logout"});
         }
-        res.clearCookie("connect.sid");
+        res.clearCookie("connect.sid", {
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        });
         res.json({message: "Logged out successfully"});
     });
 });
+
+
 
 app.listen(PORT, () => {
     console.log(`server has been started on port:${PORT}`);
