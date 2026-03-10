@@ -3,7 +3,7 @@ import bannerStar from "../assets/images/bannerStar.png";
 
 const Banner = ({scrollToCategories}) => {
     return (
-        <div className="w-full bg-[#F0F0F0]" >
+        <div className="w-full bg-[#F0F0F0] min-h-227.75 sm:min-h-261 lg:min-h-129.5 xl:min-h-151.5" >
             <div className="container">
                 <div className="max-w-310 mx-auto grid lg:grid-cols-2 gap-12.5 justify-items-center">
                     <div className="max-w-78.75 md:max-w-100 lg:max-w-137 py-10 sm:py-12 md:py-15 xl:py-20 2xl:py-25">

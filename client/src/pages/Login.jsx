@@ -50,12 +50,8 @@ const Login = ({setUser}) => {
                 setError(data.error);
                 return;
             }
-            const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
-                credentials: 'include',
-            });
-            const userData = await userRes.json();
-            setUser(userData);
-            navigate(`/dashboard/${userData.id}`);
+            setUser(data);
+            navigate(`/dashboard/${data.id}`, {replace:true});
         } catch (err) {
             console.log(err);
             setError("Server error");
@@ -86,7 +82,7 @@ const Login = ({setUser}) => {
                     </div>
                     <span className="absolute h-1 bg-[#F0F0F0] top-1/2 -translate-y-1/2 w-full"></span>
                 </div>
-                <p className="text-center text-[18px] leading-[160%]">Don't have an account? <Link to="/register" className="text-blue-600 underline text-[18px] leading-[160%]">Sign up</Link></p>
+                <p className="text-center text-[18px] leading-[160%]">Don't have an account? <Link to="/register" replace className="text-blue-600 underline text-[18px] leading-[160%]">Sign up</Link></p>
             </div>
         </div>
     );

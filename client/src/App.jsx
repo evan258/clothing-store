@@ -25,12 +25,10 @@ function App() {
         if (navType === "POP") {
             const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
             if (savedY) {
-                setTimeout(() => {
-                    window.scrollTo({
-                        top: parseInt(savedY, 10),
-                        behavior: "instant"
-                    });
-                }, 500);
+                window.scrollTo({
+                    top: parseInt(savedY, 10),
+                    behavior: "instant"
+                });
                 return;
             }
         }
@@ -64,7 +62,7 @@ function App() {
     const scrollToTop = () => {
         if (homeRef.current) {
             homeRef.current.scrollIntoView({
-                behavior: "smooth",
+                behavior: "instant",
                 block: "start"
             });
         }
@@ -74,7 +72,7 @@ function App() {
     const scrollToElement = (element) => {
         if (element.current) {
             element.current.scrollIntoView({
-                behavior: "smooth",
+                behavior: "instant",
                 block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
             });
         }
@@ -148,7 +146,7 @@ function App() {
             <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
             <Route path="/contact" element={<ContactForm />} />
             <Route path="/contact/verification" element={<Verification />} />
-            <Route path="/dashboard/:id" element={<Dashboard />} />
+            <Route path="/dashboard/:id" element={<Dashboard setUser={setUser} user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
         </Routes>
         <Footer
                 user={user}

@@ -61,7 +61,7 @@ const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrol
     }
 
     return (
-        <div className="relative container">
+        <div className="relative container min-h-19.25 lg:min-h-23.25">
             <div className={`max-w-310 mx-auto flex justify-between items-center py-6 ${searchOpen?"pb-15 md:pb-18":""}`}>
                 <div className="flex gap-4 items-center">
                     <button onClick={() => setNavOpen(!navOpen)} className="lg:hidden">

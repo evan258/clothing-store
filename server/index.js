@@ -37,7 +37,7 @@ app.use(
         cookie: {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "none",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 24 * 60 * 60 * 1000
         }
     })
@@ -262,7 +262,7 @@ app.post('/register', async (req, res) => {
         );
     
         req.session.userId = user.id;
-        res.status(201).json(user);
+        res.status(201).json({id: user.id, cart_count: 0});
 
     } catch (err) {
         console.log(err);
@@ -287,7 +287,13 @@ app.post('/login', async (req, res) => {
         }
 
         req.session.userId = user.id;
-        res.json({message: "Login successfull"});
+        const cartCountResult = await pool.query(
+            `SELECT COUNT(ci.id) as cart_count FROM carts c
+            LEFT JOIN cart_items ci on ci.cart_id = c.id
+            WHERE c.id = $1`, [user.id]
+        );
+        const cart_count = parseInt(cartCountResult.rows[0].cart_count, 10);
+        res.json({id: user.id, cart_count});
     } catch (err) {
         console.log(err);
         res.status(500).json({error: "Server error"});
@@ -1048,7 +1054,7 @@ app.get('/categories', async (_req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/logout', requireAuth, (req, res) => {
     if (!req.session) {
         return res.status(400).json({message: "No session found"});
     }
@@ -1057,7 +1063,12 @@ app.get('/logout', (req, res) => {
             console.log(err);
             return res.status(500).json({message: "Could not logout"});
         }
-        res.clearCookie("connect.sid");
+        res.clearCookie("connect.sid", {
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        });
         res.json({message: "Logged out successfully"});
     });
 });

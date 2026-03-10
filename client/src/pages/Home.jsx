@@ -12,19 +12,16 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
 
     useEffect(() => {
         if (location.state?.scrollTo) {
-            const timerId = setTimeout(() => {
-                let ref;
-                if (location.state.scrollTo === "banner") ref = bannerRef;
-                else if (location.state.scrollTo === "reviews") ref = reviewsRef;
-                else if (location.state.scrollTo === "brands") ref = brandsRef;
-                else if (location.state.scrollTo === "newArrivals") ref = newArrivalsRef;
-                else if (location.state.scrollTo === "trending") ref = trendingRef;
-                if (ref?.current) {
-                    scrollToElement(ref);
-                }
-                window.history.replaceState({}, document.title);
-            }, 500);
-            return () => clearTimeout(timerId);
+            let ref;
+            if (location.state.scrollTo === "banner") ref = bannerRef;
+            else if (location.state.scrollTo === "reviews") ref = reviewsRef;
+            else if (location.state.scrollTo === "brands") ref = brandsRef;
+            else if (location.state.scrollTo === "newArrivals") ref = newArrivalsRef;
+            else if (location.state.scrollTo === "trending") ref = trendingRef;
+            if (ref?.current) {
+                scrollToElement(ref);
+            }
+            window.history.replaceState({}, document.title);
         }
     }, [location]);
 

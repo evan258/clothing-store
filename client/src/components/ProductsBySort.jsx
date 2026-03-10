@@ -63,7 +63,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
     }, []);
 
     return (
-        <div id="products_sorted" className="container pt-12.5 md:pt-15 lg:pt-17 xl:pt-20">
+        <div className="container pt-12.5 md:pt-15 lg:pt-17 xl:pt-20 min-h-243.25 sm:min-h-259.25 md:min-h-292.25 lg:min-h-336.25 xl:min-h-376.25">
             <div className="max-w-310 mx-auto">
                 <h2 ref={newArrivalsRef} className="text-center">NEW ARRIVALS</h2>
                 <div className="pt-8 md:pt-10 lg:pt-12 xl:pt-14 pb-6 md:pb-7 lg:pb-8 xl:pb-9 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">

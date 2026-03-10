@@ -23,7 +23,7 @@ const ProductsByCategories = () => {
     }, []);
 
     return (
-        <div className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20">
+        <div className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20 min-h-203.75 sm:min-h-375 md:min-h-153 lg:min-h-193 xl:min-h-237.5">
             <div className="max-w-310 mx-auto bg-[#F0F0F0] rounded-[20px]">
                 <h2 className="text-center pt-10 md:pt-13 lg:pt-15 xl:pt-17.5">BROWSE BY DRESS STYLE</h2>
                 <div className="grid grid-cols-3 gap-3 md:gap-4 lg:gap-5 p-6 pt-7 md:p-9 lg:p-13 xl:pt-16">

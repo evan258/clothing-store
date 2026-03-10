@@ -95,12 +95,26 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
             }
         }
         fetchCartDetails();
-    }, []);
+    }, [cartItems]);
+
+    const cl = 120 * cartItems.length;
+    const clmd = 135 * cartItems.length;
+    const cllg = 150 * cartItems.length;
+    const os = 130 + (cartItems.length ? 344 + 287 : 0);
+    const mdos = 150 + (cartItems.length ? 391 : 0);
+    const lgos = 170 + (cartItems.length ? 436 + 393 : 0);
+    const min_h = cl + os;
+    const md_min_h = clmd + mdos;
+    const lg_min_h = Math.max(cllg, lgos);
+    const currentHeight = window.innerWidth >= 1024 ? lg_min_h : (window.innerWidth >= 768 ? md_min_h : min_h);
 
     return (
         <>
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
-            <div className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5">
+            <div
+                className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5"
+                style={{minHeight: `${currentHeight}px`}}
+            >
                 <div className="max-w-310 mx-auto">
                     <h2 className="pb-5 md:pb-6">YOUR CART</h2>
                     <div className="grid grid-cols-3 gap-4 md:gap-5">
