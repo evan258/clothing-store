@@ -8,7 +8,7 @@ import StarRating from "../components/StarRating";
 import ReviewOptions from "../components/ReviewOptions";
 import ReviewText from "../components/ReviewText";
 
-const Dashboard = () => {
+const Dashboard = ({setUser}) => {
     const {id} = useParams();
     const [reviews, setReviews] = useState([]);
     const [userInfo, setUserInfo] = useState({});
