@@ -148,7 +148,7 @@ function App() {
             <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
             <Route path="/contact" element={<ContactForm />} />
             <Route path="/contact/verification" element={<Verification />} />
-            <Route path="/dashboard/:id" element={<Dashboard />} />
+            <Route path="/dashboard/:id" element={<Dashboard setUser={setUser} />} />
         </Routes>
         <Footer
                 user={user}
