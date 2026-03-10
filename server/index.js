@@ -1073,6 +1073,8 @@ app.get('/logout', requireAuth, (req, res) => {
     });
 });
 
+
+
 app.listen(PORT, () => {
     console.log(`server has been started on port:${PORT}`);
 });

@@ -317,6 +317,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                             {message}
                         </div>
                     )}
+                    <button onClick={handleLogout} className="btn-dark max-w-75">Logout</button>
                 </div>
             </div>
         </>
