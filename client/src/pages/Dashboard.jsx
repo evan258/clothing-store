@@ -121,6 +121,29 @@ const Dashboard = () => {
         }
     }
 
+    const handleLogout = async() => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {credentials:"include"});
+            const data = await res.json();
+            if (!res.ok){
+                setError(data.error);
+                setTimeout(() => {
+                    setError("");
+                }, 5000);
+                return;
+            }
+            setUser(null);
+            navigate('/', {replace:true});
+        } catch (err) {
+            setError("Server error");
+            setTimeout(() => {
+                setError("");
+            }, 5000);
+        }
+    }
+
+
+
     return (
         <div className="container py-6 sm:py-10 md:py-13.5 lg:py-17.5">
             <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto items-center">
@@ -137,6 +160,7 @@ const Dashboard = () => {
                             <h5>Created At: {dayjs(userInfo.created_at).format("MMMM D, YYYY")}</h5>
                         </div>
                     )}
+                    <button onClick={handleLogout} className="btn-dark max-w-75">Logout</button>
                 </div>
             </div>
             <div className="max-w-310 mx-auto my-5 md:my-6 lg:my-7 w-full h-px bg-[#F0F0F0]"></div>
