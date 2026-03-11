@@ -98,29 +98,8 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
         fetchCartDetails();
     }, []);
 
-    const headerFooter = 510 + 77;
-    const headerFooterMd = 540 + 77;
-    const headerFooterLg = 446 + 93;
-    const headerFooterXl = 396 + 96;
-    const max320cartLen = 200 * cartItems.length;
-    const max400cartLen = 140 * cartItems.length;
-    const cartLen = 140 * cartItems.length;
-    const cartLenMd = 140 * cartItems.length;
-    const cartLenLg = 170 * cartItems.length;
-    const orderSummaryLen = 130 + (cartItems.length ? 344 + 287 : 0);
-    const orderSummaryLenMd = 150 + (cartItems.length ? 391 : 0);
-    const orderSummaryLenLg = 150 + (cartItems.length ? 456 + 383 : 0);
-    const max_320_min_h = max320cartLen + orderSummaryLen + headerFooter + 300;
-    const max_400_min_h = max400cartLen + orderSummaryLen + headerFooter + 100;
-    const min_h = cartLen + orderSummaryLen + headerFooter + 150;
-    const md_min_h = cartLenMd + orderSummaryLenMd + headerFooterMd + 200;
-    const lg_min_h = Math.max(cartLenLg, orderSummaryLenLg) + headerFooterLg + 100;
-    const xl_min_h = Math.max(cartLenLg, orderSummaryLenLg) + headerFooterXl;
-    const currentHeight = window.innerWidth >= 1280 ? xl_min_h : (window.innerWidth >= 1024 ? lg_min_h : (window.innerWidth >= 768 ? md_min_h : (window.innerWidth >= 640 ? min_h : (window.innerWidth >= 400 ? max_400_min_h : max_320_min_h))));
-
-    return (
+       return (
         <div
-            style={{minHeight: `${currentHeight}px`}}
         >
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div

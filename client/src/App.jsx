@@ -6,7 +6,6 @@ import Register from "./pages/Register.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import ReviewForm from "./pages/ReviewForm.jsx";
 import EditReview from "./pages/EditReview.jsx";
-import Footer from "./components/Footer.jsx";
 import Cart from "./pages/Cart.jsx";
 import OrderForm from "./pages/OrderForm.jsx";
 import CheckoutWrapper from "./pages/CheckoutWrapper.jsx";
@@ -22,21 +21,26 @@ function App() {
     const navType = useNavigationType();
 
     useEffect(() => {
-        if (navType === "POP") {
-            const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
-            if (savedY) {
-                window.scrollTo({
-                    top: parseInt(savedY, 10),
-                    behavior: "instant"
-                });
-                return;
+        const rAFId = requestAnimationFrame(() => {
+            if (navType === "POP") {
+                const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
+                if (savedY) {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: parseInt(savedY, 10),
+                            behavior: "instant"
+                        });
+                    },50);
+                    return;
+                }
             }
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "instant"
+            window.scrollTo({
+                top: 0,
+                behavior: "instant"
+            });
         });
+
+        return () => cancelAnimationFrame(rAFId);
     }, [location.pathname, navType, location.search]);
 
     useEffect(() => {
@@ -60,22 +64,26 @@ function App() {
     const homeRef = useRef(null);
 
     const scrollToTop = () => {
-        if (homeRef.current) {
-            homeRef.current.scrollIntoView({
-                behavior: "instant",
-                block: "start"
-            });
-        }
+        requestAnimationFrame(() => {
+            if (homeRef.current) {
+                homeRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+        });
     }
 
 
     const scrollToElement = (element) => {
-        if (element.current) {
-            element.current.scrollIntoView({
-                behavior: "instant",
-                block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
-            });
-        }
+        requestAnimationFrame(() => {
+            if (element.current) {
+                element.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
+                });
+            }
+        });
     }
 
     useEffect(() => {
@@ -122,8 +130,8 @@ function App() {
       <>
         <Routes>
             <Route path="/" 
-                element={
-                    <Home user={user}
+                element={<Home 
+                    user={user}
                     categories={categories} 
                     brandsRef={brandsRef}
                     newArrivalsRef={newArrivalsRef} 
@@ -133,20 +141,71 @@ function App() {
                     bannerRef={bannerRef}
                     homeRef={homeRef}
                     scrollToElement={scrollToElement}
+                    scrollToTop={scrollToTop}
                 />}
             />
             <Route path="/login" element={<Login setUser={setUser} />} />
             <Route path="/register" element={<Register setUser={setUser} />} />
-            <Route path="/products/:id" element={<ProductDetails user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} bannerRef={bannerRef} reviewsRef={reviewsRef} scrollToElement={scrollToElement} scrollToTop={scrollToTop} />} />
+            <Route path="/products/:id" 
+                element={<ProductDetails 
+                    user={user} 
+                    setUser={setUser} 
+                    categories={categories} 
+                    brandsRef={brandsRef} 
+                    newArrivalsRef={newArrivalsRef} 
+                    trendingRef={trendingRef} 
+                    bannerRef={bannerRef} 
+                    reviewsRef={reviewsRef} 
+                    scrollToElement={scrollToElement} 
+                    scrollToTop={scrollToTop} 
+                />} 
+            />
             <Route path="/reviews/post/:id" element={<ReviewForm />} />
             <Route path="/reviews/put/:id" element={<EditReview />} />
-            <Route path="/cart" element={<Cart user={user} setUser={setUser} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} bannerRef={bannerRef} reviewsRef={reviewsRef} scrollToElement={scrollToElement} scrollToTop={scrollToTop} />} />
+            <Route path="/cart" 
+                element={<Cart 
+                    user={user} 
+                    setUser={setUser} 
+                    categories={categories} 
+                    brandsRef={brandsRef} 
+                    newArrivalsRef={newArrivalsRef} 
+                    trendingRef={trendingRef} 
+                    bannerRef={bannerRef} 
+                    reviewsRef={reviewsRef} 
+                    scrollToElement={scrollToElement} 
+                    scrollToTop={scrollToTop} 
+                />} 
+            />
             <Route path="/checkout" element={<OrderForm />} />
             <Route path="/checkout/:id/payment" element={<CheckoutWrapper />} />
-            <Route path="/products/categories/:id" element={<Catalogue user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
+            <Route path="/products/categories/:id" 
+                element={<Catalogue 
+                    user={user} 
+                    categories={categories} 
+                    brandsRef={brandsRef} 
+                    newArrivalsRef={newArrivalsRef} 
+                    trendingRef={trendingRef} 
+                    bannerRef={bannerRef} 
+                    reviewsRef={reviewsRef} 
+                    scrollToElement={scrollToElement} 
+                    scrollToTop={scrollToTop} 
+                />} 
+            />
             <Route path="/contact" element={<ContactForm />} />
             <Route path="/contact/verification" element={<Verification />} />
-            <Route path="/dashboard/:id" element={<Dashboard setUser={setUser} user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />} />
+            <Route path="/dashboard/:id" 
+                element={<Dashboard 
+                    setUser={setUser}
+                    user={user}
+                    categories={categories}
+                    brandsRef={brandsRef}
+                    newArrivalsRef={newArrivalsRef}
+                    trendingRef={trendingRef}
+                    bannerRef={bannerRef}
+                    scrollToElement={scrollToElement} 
+                    scrollToTop={scrollToTop}
+                />} 
+            />
         </Routes>
       </>
   );

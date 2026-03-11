@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 
-const ProductsByCategories = () => {
+const ProductsByCategories = ({onLoad}) => {
     const [categories, setCategories] = useState([]);
    
     useEffect(() => {
@@ -17,6 +17,8 @@ const ProductsByCategories = () => {
                 setCategories(data || []);
             } catch (err) {
                 console.log(err);
+            } finally {
+                onLoad();
             }
         }
         fetchCategories();

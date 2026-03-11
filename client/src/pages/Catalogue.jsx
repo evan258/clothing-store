@@ -4,8 +4,10 @@ import Header from "../components/Header";
 import StarRating from "../components/StarRating";
 import filter from "../assets/images/filter.svg";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
+import ProductDetails from "./ProductDetails";
+import Footer from "../components/Footer";
 
-const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
     const {id} = useParams();
     const [products, setProducts] = useState([]);
     const [searchParams] = useSearchParams();
@@ -69,8 +71,23 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [sidebar]);
 
+    const headerFooter = 510 + 77;
+    const headerFooterMd = 540 + 77;
+    const headerFooterLg = 446 + 93;
+    const headerFooterXl = 396 + 96;
+    const rows = Math.ceil(products.length / 2) * 330 + headerFooter + 300;
+    const rows_400 = Math.ceil(products.length / 2) * 292 + headerFooter + 280;
+    const rows_500 = Math.ceil(products.length / 2) * 268 + headerFooter + 280;
+    const rows_sm = Math.ceil(products.length / 2) * 300 + headerFooter + 280;
+    const rows_md = Math.ceil(products.length / 3) * 338 + headerFooterMd + 270;
+    const rows_lg = Math.ceil(products.length / 3) * 386 + headerFooterLg + 220;
+    const rows_xl = Math.ceil(products.length / 3) * 437 + headerFooterXl + 210;
+    const currentHeight = window.innerWidth >= 1280 ? rows_xl : (window.innerWidth >= 1024 ? rows_lg : (window.innerWidth >= 768 ? rows_md : (window.innerWidth >= 640 ? rows_sm : (window.innerWidth >= 500 ? rows_500 : (window.innerWidth >= 400 ? rows_400 : rows)))));
+
     return (
-        <>
+        <div 
+            style={{minHeight: `${currentHeight}px`}}
+        >
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div className="container border-t border-[#F0F0F0]">
                 <div className="max-w-max mx-auto grid gap-5 lg:grid-cols-[1fr_4fr] items-start pt-6 sm:pt-10 md:pt-13.5 lg:pt-17.5">
@@ -143,7 +160,15 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
                     </div>
                 </div>
             </div>        
-        </>
+            <Footer
+                user={user}
+                brandsRef={brandsRef}
+                reviewsRef={reviewsRef}
+                bannerRef={bannerRef}
+                scrollToElement={scrollToElement}
+                scrollToTop={scrollToTop}
+            />
+        </div>
     )
 }
 

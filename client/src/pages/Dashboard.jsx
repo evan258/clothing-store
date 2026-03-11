@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import userIcon from "../assets/images/user.svg";
 import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
 import ReviewOptions from "../components/ReviewOptions";
 import ReviewText from "../components/ReviewText";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
-const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, scrollToElement, scrollToTop}) => {
     const {id} = useParams();
     const [reviews, setReviews] = useState([]);
     const [userInfo, setUserInfo] = useState({});
@@ -20,6 +21,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsRef = useRef(null);
     const isFirstRender = useRef(true);
+    const [isReady, setIsReady] = useState(false);
 
     const reviewsPerPage = 4;
     const currentPageLastIndex = reviewsPerPage * currentPage;
@@ -95,9 +97,18 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                 }, 5000);
             }
         }
-
-        fetchOrderDetails();
-        fetchUserDetails();
+        const fetchData = async () => {
+            try {
+                await Promise.all([fetchOrderDetails(), fetchUserDetails()]);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setTimeout(() => {
+                    setIsReady(true);
+                }, 40);
+            }
+        }
+        fetchData();
     }, []);
 
     const handleCancel = async (id) => {
@@ -148,8 +159,13 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
         }
     }
 
+    const rows = orders.length * 480 + reviews.length * 240 + 1800;
+    const rowsmd = orders.length * 440 + Math.ceil(reviews.length / 2) * 280 + 1950;
+    const rowsxl = orders.length * 460 + Math.ceil(reviews.length / 2) * 280 + 1950;
+    const currentHeight = window.innerWidth >= 1280 ? rowsxl : (window.innerWidth >= 768 ? rowsmd : rows);
+
     return (
-        <>
+        <div style={{minHeight: !isReady ? `${currentHeight}px` : ""}}>
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div className="border-t border-[#F0F0F0] container py-6 sm:py-10 md:py-13.5 lg:py-17.5">
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto items-center">
@@ -204,7 +220,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                                 </div>
                                 <div className="flex flex-col gap-3 mb-4">
                                     {order.products.map((product) => (
-                                        <div key={product.product_id} className="flex items-center gap-4 border-b pb-3">
+                                        <Link to={`/products/${product.product_id}`} key={product.product_id} className="flex items-center gap-4 border-b pb-3">
                                             <img
                                                 src={product.image_url}
                                                 alt={product.name}
@@ -218,7 +234,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Link>
                                     ))}
                                 </div>
                                 <div className="flex justify-between items-center mt-4">
@@ -319,7 +335,15 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                     )}
                 </div>
             </div>
-        </>
+            <Footer
+                user={user}
+                brandsRef={brandsRef}
+                reviewsRef={reviewsRef}
+                bannerRef={bannerRef}
+                scrollToElement={scrollToElement}
+                scrollToTop={scrollToTop}
+            />
+        </div>
     )
 }
 

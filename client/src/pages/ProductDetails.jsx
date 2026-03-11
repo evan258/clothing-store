@@ -191,20 +191,9 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
         }
         navigate(`/reviews/post/${productDetails.id}`);
     }
-    const headerFooter = 510 + 77;
-    const headerFooterMd = 540 + 77;
-    const headerFooterLg = 446 + 93;
-    const headerFooterXl = 396 + 96;
-    const h = 1047 + (related.length ? 296 : 0) + (reviews.length > 4 ? 218 * 4 : 218 * reviews.length) + headerFooter + 200;
-    const hsm = 1129 + (related.length ? 290 : 0) + (reviews.length > 4 ? 214 * 4 : 214 * reviews.length) + headerFooter + 170;
-    const hmd = 1425 + (related.length ? 329 : 0) + (reviews.length > 0 ? 233 : 0) + (reviews.length > 2 ? 252 : 0) + headerFooterMd + 150;
-    const hlg = 1134 + (related.length ? 354 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0) + headerFooterLg + 150;
-    const hxl = 1161 + (related.length ? 397 : 0) + (reviews.length > 0 ? 244 : 0) + (reviews.length > 2 ? 244 : 0) + headerFooterXl + 150;
-    const curretHeight = window.innerWidth >= 1280 ? hxl : (window.innerWidth >= 1024 ? hlg : (window.innerWidth >= 768 ? hmd : (window.innerWidth >= 640 ? hsm : h)));
 
     return (
         <div
-            style={{minHeight: `${curretHeight}px`}}
         >
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div

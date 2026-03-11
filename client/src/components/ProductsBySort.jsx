@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 
 
-const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
+const ProductsBySort = ({newArrivalsRef, trendingRef, onLoad}) => {
     const [latest, setLatest] = useState([]);
     const [trending, setTrending] = useState([]);
     const [itemsPerRow, setItemsPerRow] = useState(2);
@@ -57,9 +57,17 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
                 console.log(err);
             }
         }
-
-        fetchLatest();
-        fetchTrending();
+        
+        const fetchData = async () => {
+            try {
+                await Promise.all([fetchLatest(), fetchTrending()]);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                onLoad();
+            }
+        }
+        fetchData();
     }, []);
 
     return (
