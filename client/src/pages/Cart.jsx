@@ -106,15 +106,15 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
             >
                 <div className="max-w-310 mx-auto">
                     <h2 className="pb-5 md:pb-6">YOUR CART</h2>
-                    <div className="grid grid-cols-3 gap-4 md:gap-5">
-                        <div className="max-h-max col-span-3 lg:col-span-2 flex flex-col gap-4 md:gap-5 lg:gap-6 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
-                            {cartItems.map((item, index) => {
-                                return (
-                                    <CartItem key={`${item.id}-${item.size}`} setUser={setUser} quantities={quantities} setQuantities={setQuantities} setCartItems={setCartItems} item={item} index={index} cartItems={cartItems} />
-                                )
-                            })}
-                        </div>
-                        {cartItems.length > 0 && (
+                    {cartItems.length > 0 && (
+                        <div className="grid grid-cols-3 gap-4 md:gap-5">
+                            <div className="max-h-max col-span-3 lg:col-span-2 flex flex-col gap-4 md:gap-5 lg:gap-6 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
+                                {cartItems.map((item, index) => {
+                                    return (
+                                        <CartItem key={`${item.id}-${item.size}`} setUser={setUser} quantities={quantities} setQuantities={setQuantities} setCartItems={setCartItems} item={item} index={index} cartItems={cartItems} />
+                                    )
+                                })}
+                            </div>
                             <div className="col-span-3 lg:col-span-1 w-full max-h-max flex flex-col md:flex-row lg:flex-col gap-4 md:gap-5">
                                 <div className="flex flex-1 flex-col gap-4 md:gap-5 rounded-[20px] border border-[#F0F0F0] p-3 lg:px-6 lg:py-5 md:px-5 md:py-4">
                                     <h4 className="border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6">Delivery Options</h4>
@@ -125,7 +125,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                                             >
                                                 <div className="flex item-center gap-2 md:gap-3">
                                                     <div className="size-8 md:size-10 lg:size-12">
-                                                        <img src={deliveryIcons[option.name]} alt="delivery image" />
+                                                        <img className="h-full w-full object-cover" src={deliveryIcons[option.name]} alt="delivery image" />
                                                     </div>
                                                     <div>
                                                         <div className="flex justify-between gap-2 md:gap-3">
@@ -148,8 +148,8 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                                 </div>
                                 <OrderSummary subtotal={subtotal} averageDiscount={averageDiscount} totalDiscount={totalDiscount} deliveryPrice={deliveryPrice} total={total} selectedDeliveryId={selectedDeliveryId} />
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                     <div className="fixed bottom-0 -translate-y-full left-0 right-0 z-50">
                         {error && (
                             <div className="min-w-75 sm:min-w-100 md:min-w-125 lg:min-w-150 text-center tracking-wide max-w-max mx-auto px-3 py-2 bg-red-100 text-red-600 rounded-2xl">

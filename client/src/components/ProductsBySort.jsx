@@ -74,7 +74,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
                                     <div className={`size-35 sm:size-43 md:size-50 lg:size-60 xl:size-70 bg-[#F0F0F0] 
                                         rounded-[14px] md:[rounded-16px] lg:rounded-[18px] xl:rounded-[20px]
                                         overflow-hidden`}>
-                                        <img src={item.image_url} alt="product image" />
+                                        <img className="h-full w-full object-cover" src={item.image_url} alt="product image" />
                                     </div>
                                     <h5>{item.name}</h5>
                                     <StarRating averageRating={parseFloat(item.average_rating)} />
@@ -115,7 +115,7 @@ const ProductsBySort = ({newArrivalsRef, trendingRef}) => {
                                     <div className={`size-35 sm:size-43 md:size-50 lg:size-60 xl:size-70 bg-[#F0F0F0] 
                                         rounded-[14px] md:[rounded-16px] lg:rounded-[18px] xl:rounded-[20px]
                                         overflow-hidden`}>
-                                        <img src={item.image_url} alt="product image" />
+                                        <img className="h-full w-full object-cover" src={item.image_url} alt="product image" />
                                     </div>
                                     <h5>{item.name}</h5>
                                     <StarRating averageRating={parseFloat(item.average_rating)} />

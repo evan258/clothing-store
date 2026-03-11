@@ -77,6 +77,9 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     },[selectedStock]);
 
     useEffect(() => {
+        setCartMessage("");
+        setCartError("");
+        setSelectedStock(null);
         const fetchProductDetails = async () => {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
             const data = await res.json();
@@ -218,7 +221,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
             >
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto">
                     <div className="w-78 sm:w-90 md:w-100 lg:w-111">
-                        <img className="w-full object-cover object-center" src={productDetails.image_url} alt="product image" />
+                        <img className="w-full aspect-3/4 object-cover object-center" src={productDetails.image_url} alt="product image" />
                     </div>
                     <div>
                         <h3 className="font-archivo text-[28px] md:text-[35px] lg:text-[40px]">{productDetails.name}</h3>
@@ -405,7 +408,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
                                             <div className={`size-35 sm:size-43 md:size-50 lg:size-60 xl:size-70 bg-[#F0F0F0] 
                                                 rounded-[14px] md:[rounded-16px] lg:rounded-[18px] xl:rounded-[20px]
                                                 overflow-hidden`}>
-                                                <img src={item.image_url} alt="product image" />
+                                                <img className="h-full w-full object-cover" src={item.image_url} alt="product image" />
                                             </div>
                                             <h5>{item.name}</h5>
                                             <StarRating averageRating={parseFloat(item.average_rating)} />

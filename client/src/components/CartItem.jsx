@@ -53,7 +53,7 @@ const CartItem = ({setUser, quantities, setQuantities, setCartItems, item, index
                 ${index !== cartItems.length - 1 ? "border-b border-[#F0F0F0] pb-4 md:pb-5 lg:pb-6" : ""}`}
         >
             <div className="size-25 md:size-28 lg:size-31 rounded-lg overflow-hidden">
-                <img className="cover" src={item.image_url} alt="product image" />
+                <img className="object-cover h-full w-full" src={item.image_url} alt="product image" />
             </div>
             <div className="flex flex-1 flex-col justify-between">
             <Link to={`/products/${item.id}`}>

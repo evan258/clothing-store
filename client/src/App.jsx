@@ -30,13 +30,14 @@ function App() {
                 const intervalId = setInterval(() => {
                     const pageHeight = document.documentElement.scrollHeight;
                     const targetY = parseInt(savedY, 10);
+                    // console.log(targetY);
                     if (pageHeight >= targetY) {
                         window.scrollTo({
                             top: targetY,
                             behavior: "instant"
                         });
                         clearInterval(intervalId);
-                        console.log(attempt);
+                        console.log("attempt", attempt);
                     }
                     attempt++;
                 }, 50);

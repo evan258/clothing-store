@@ -153,7 +153,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
             <div className="border-t border-[#F0F0F0] container py-6 sm:py-10 md:py-13.5 lg:py-17.5">
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto items-center">
                     <div className="w-50 sm:w-60 md:w-70 lg:w-80">
-                        <img className="w-full object-cover object-center" src={userIcon} alt="profile" />
+                        <img className="w-full h-full aspect-square object-cover object-center" src={userIcon} alt="profile" />
                     </div>
                     <div className="flex flex-col gap-4 md:gap-5 lg:gap-6">
                         <h4>User Details</h4>
