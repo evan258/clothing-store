@@ -120,23 +120,33 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     },[id]);
 
     const handleAddToCart = async () => {
-        setCartError("");
-        setCartMessage("");
         if (!selectedStock) {
             setCartError("Please select a size first");
+            setTimeout(() => {
+                setCartError("");
+            }, 5000);
             return;
         }
         if (selectedStock.stock < quantity) {
             setCartError("Not enough items available in stock");
+            setTimeout(() => {
+                setCartError("");
+            }, 5000);
             return;
         }
         if (quantity <= 0) {
             setCartError("Quantity must be at least 1");
+            setTimeout(() => {
+                setCartError("");
+            }, 5000);
             return;
         }
         const parsed = Number(quantity);
         if (!Number.isInteger(parsed)) {
             setCartError("Please enter a whole number");
+            setTimeout(() => {
+                setCartError("");
+            }, 5000);
             return;
         }
 
@@ -156,9 +166,15 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
             const data = await res.json();
             if (!res.ok) {
                 setCartError(data.message);
+                setTimeout(() => {
+                    setCartError("");
+                }, 5000);
                 return;
             }
             setCartMessage("Item Added to the cart");
+            setTimeout(() => {
+                setCartMessage("");
+            }, 5000);
             const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
                 credentials: "include",
             });
@@ -167,6 +183,9 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
         } catch (err) {
             console.log(err);
             setCartError("Server error");
+            setTimeout(() => {
+                setCartError("");
+            }, 5000);
         }
     }
 

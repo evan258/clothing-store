@@ -25,6 +25,8 @@ function App() {
         if (navType === "POP") {
             const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
             if (savedY !== null) {
+                let attempt = 0;
+                console.log("declared");
                 const intervalId = setInterval(() => {
                     const pageHeight = document.documentElement.scrollHeight;
                     const targetY = parseInt(savedY, 10);
@@ -34,7 +36,9 @@ function App() {
                             behavior: "instant"
                         });
                         clearInterval(intervalId);
+                        console.log(attempt);
                     }
+                    attempt++;
                 }, 50);
                 return () => clearInterval(intervalId);
             }
