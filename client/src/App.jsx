@@ -13,6 +13,7 @@ import Catalogue from "./pages/Catalogue.jsx";
 import ContactForm from "./pages/ContactForm.jsx";
 import Verification from "./pages/Verfication.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Footer from "./components/Footer.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -21,26 +22,30 @@ function App() {
     const navType = useNavigationType();
 
     useEffect(() => {
-        const rAFId = requestAnimationFrame(() => {
-            if (navType === "POP") {
-                const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
-                if (savedY) {
-                    setTimeout(() => {
+        if (navType === "POP") {
+            const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
+            if (savedY !== null) {
+                const intervalId = setInterval(() => {
+                    const pageHeight = document.documentElement.scrollHeight;
+                    const targetY = parseInt(savedY, 10);
+                    if (pageHeight >= targetY) {
                         window.scrollTo({
-                            top: parseInt(savedY, 10),
+                            top: targetY,
                             behavior: "instant"
                         });
-                    },50);
-                    return;
-                }
+                        clearInterval(intervalId);
+                    }
+                }, 50);
+                return () => clearInterval(intervalId);
             }
+        }
+        const rafId = requestAnimationFrame(() => {
             window.scrollTo({
                 top: 0,
                 behavior: "instant"
             });
         });
-
-        return () => cancelAnimationFrame(rAFId);
+        return () => cancelAnimationFrame(rafId);
     }, [location.pathname, navType, location.search]);
 
     useEffect(() => {
@@ -207,6 +212,14 @@ function App() {
                 />} 
             />
         </Routes>
+        <Footer
+            user={user}
+            brandsRef={brandsRef}
+            reviewsRef={reviewsRef}
+            bannerRef={bannerRef}
+            scrollToElement={scrollToElement}
+            scrollToTop={scrollToTop}
+        />
       </>
   );
 }

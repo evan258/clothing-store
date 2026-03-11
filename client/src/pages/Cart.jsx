@@ -6,9 +6,8 @@ import fast from "../assets/images/fast.png";
 import superFast from "../assets/images/superFast.png";
 import { useLocation } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
-import Footer from "../components/Footer";
 
-const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
+const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const [cartItems, setCartItems] = useState([]);
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -165,14 +164,6 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                     </div>
                 </div>
             </div>
-            <Footer
-                user={user}
-                brandsRef={brandsRef}
-                reviewsRef={reviewsRef}
-                bannerRef={bannerRef}
-                scrollToElement={scrollToElement}
-                scrollToTop={scrollToTop}
-            />
         </div>
     )
 }

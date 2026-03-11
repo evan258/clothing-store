@@ -10,9 +10,8 @@ import plus from "../assets/images/plus.svg";
 import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
 import dayjs from "dayjs";
-import Footer from "../components/Footer";
 
-const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
+const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const { id } = useParams();
     const [productDetails, setProductDetails] = useState({});
     const [error, setError] = useState("");
@@ -193,8 +192,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     }
 
     return (
-        <div
-        >
+        <div>
             <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
             <div
                 className="container border-t border-[#F0F0F0] py-6 sm:py-10 md:py-13.5 lg:py-17.5"
@@ -420,14 +418,6 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
                     </div>
                 )}
             </div>
-            <Footer
-                user={user}
-                brandsRef={brandsRef}
-                reviewsRef={reviewsRef}
-                bannerRef={bannerRef}
-                scrollToElement={scrollToElement}
-                scrollToTop={scrollToTop}
-            />
         </div>
     )
 }
