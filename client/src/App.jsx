@@ -48,6 +48,7 @@ function App() {
                 }
             }
         }
+        console.log("outside pop");
         const rafId = requestAnimationFrame(() => {
             window.scrollTo({
                 top: 0,
