@@ -7,13 +7,14 @@ import Stripe from "stripe";
 import nodeCron from "node-cron";
 import { z } from "zod";
 import rateLimit from "express-rate-limit";
-import nodemailer from "nodemailer";
 import pool from "./db.js";
+import { Resend } from "resend";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -43,12 +44,12 @@ app.use(
     })
 );
 
-nodeCron.schedule('*/5 * * * *', async () => {
+nodeCron.schedule('*/1 * * * *', async () => {
     try {
         const {rows} = await pool.query(
             `SELECT id, payment_intent_id FROM orders
             WHERE status = 'pending'
-            AND created_at < NOW() - INTERVAL '5 minutes'`,
+            AND created_at < NOW() - INTERVAL '1 minutes'`,
         );
         for (const order of rows) {
             console.log(`from node cron orderId:${order.id}`);
@@ -151,14 +152,6 @@ const contactSchema = z.object({
     captchaToken: z.string()
 });
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-});
-
 app.post('/contact', requireAuth, contactLimiter, async (req, res) => {
     try {
         const result = contactSchema.safeParse(req.body);
@@ -183,8 +176,8 @@ app.post('/contact', requireAuth, contactLimiter, async (req, res) => {
         req.session.expire = Date.now() + 5 * 60 * 1000;
         req.session.text = text;
         req.session.name = name;
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to: email,
             subject: "Your OTP code",
             text: `Your verification code is ${otp}. It expires in 5 minutes`
@@ -206,8 +199,8 @@ app.post('/contact/verification', requireAuth, async (req, res) => {
     }
     const {name, email, text} = req.session;
     try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to: process.env.EMAIL_USER,
             replyTo: email,
             subject: "New contact message",
@@ -217,8 +210,8 @@ Email: ${email}
 Message: ${text}
 `
         });
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
             to: email,
             subject: "We received your message!",
             text: "Thanks for reaching out! We will get back to you soon."

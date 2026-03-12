@@ -25,32 +25,23 @@ function App() {
         if (navType === "POP") {
             const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
             if (savedY !== null) {
-                let attempt = 0;
-                console.log("declared");
                 const intervalId = setInterval(() => {
                     const pageHeight = document.documentElement.scrollHeight;
                     const targetY = parseInt(savedY, 10);
                     const imagesLoaded = Array.from(document.images).every(img => img.complete);
-                    console.log(targetY);
                     if (pageHeight >= targetY && imagesLoaded) {
-                        setTimeout(() => {
-                            window.scrollTo({
-                                top: targetY,
-                                behavior: "instant"
-                            });
-                        }, 1000);
+                        window.scrollTo({
+                            top: targetY,
+                            behavior: "instant"
+                        });
                         clearInterval(intervalId);
-                        console.log("attempt", attempt);
                     }
-                    attempt++;
                 }, 50);
                 return () => {
-                    console.log("cleanup called");
                     clearInterval(intervalId);
                 }
             }
         }
-        console.log("outside pop");
         const rafId = requestAnimationFrame(() => {
             window.scrollTo({
                 top: 0,
