@@ -33,10 +33,12 @@ function App() {
                     const imagesLoaded = Array.from(document.images).every(img => img.complete);
                     console.log(targetY);
                     if (pageHeight >= targetY && imagesLoaded) {
-                        window.scrollTo({
-                            top: targetY,
-                            behavior: "instant"
-                        });
+                        setTimeout(() => {
+                            window.scrollTo({
+                                top: targetY,
+                                behavior: "instant"
+                            });
+                        }, 500);
                         clearInterval(intervalId);
                         console.log("attempt", attempt);
                     }
