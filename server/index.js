@@ -542,6 +542,7 @@ app.get('/orders', requireAuth, async (req, res) => {
                 products: Object.values(order.products)
             }
         });
+        formatted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         res.json(formatted);
     } catch (err) {
         console.log(err);
