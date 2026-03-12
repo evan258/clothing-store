@@ -36,7 +36,7 @@ function App() {
                                 behavior: "instant"
                             });
                             clearInterval(intervalId);
-                        }, 50);
+                        }, 200);
                     }
                 }, 50);
                 return () => {
