@@ -30,11 +30,13 @@ function App() {
                     const targetY = parseInt(savedY, 10);
                     const imagesLoaded = Array.from(document.images).every(img => img.complete);
                     if (pageHeight >= targetY && imagesLoaded) {
-                        window.scrollTo({
-                            top: targetY,
-                            behavior: "instant"
-                        });
-                        clearInterval(intervalId);
+                        setTimeout(() => {
+                            window.scrollTo({
+                                top: targetY,
+                                behavior: "instant"
+                            });
+                            clearInterval(intervalId);
+                        }, 50);
                     }
                 }, 50);
                 return () => {
@@ -72,26 +74,26 @@ function App() {
     const homeRef = useRef(null);
 
     const scrollToTop = () => {
-        requestAnimationFrame(() => {
+        setTimeout(() => {
             if (homeRef.current) {
                 homeRef.current.scrollIntoView({
                     behavior: "smooth",
                     block: "start"
                 });
             }
-        });
+        }, 50);
     }
 
 
     const scrollToElement = (element) => {
-        requestAnimationFrame(() => {
+        setTimeout(() => {
             if (element.current) {
                 element.current.scrollIntoView({
                     behavior: "smooth",
                     block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
                 });
             }
-        });
+        }, 50);
     }
 
     useEffect(() => {

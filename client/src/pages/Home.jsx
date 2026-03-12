@@ -11,18 +11,20 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
     const location = useLocation();
 
     useEffect(() => {
-        if (location.state?.scrollTo) {
-            let ref;
-            if (location.state.scrollTo === "banner") ref = bannerRef;
-            else if (location.state.scrollTo === "reviews") ref = reviewsRef;
-            else if (location.state.scrollTo === "brands") ref = brandsRef;
-            else if (location.state.scrollTo === "newArrivals") ref = newArrivalsRef;
-            else if (location.state.scrollTo === "trending") ref = trendingRef;
-            if (ref?.current) {
-                scrollToElement(ref);
+        requestAnimationFrame(() => {
+            if (location.state?.scrollTo) {
+                let ref;
+                if (location.state.scrollTo === "banner") ref = bannerRef;
+                else if (location.state.scrollTo === "reviews") ref = reviewsRef;
+                else if (location.state.scrollTo === "brands") ref = brandsRef;
+                else if (location.state.scrollTo === "newArrivals") ref = newArrivalsRef;
+                else if (location.state.scrollTo === "trending") ref = trendingRef;
+                if (ref?.current) {
+                    scrollToElement(ref);
+                }
+                window.history.replaceState({}, document.title);
             }
-            window.history.replaceState({}, document.title);
-        }
+        });
     }, [location]);
 
     return (
