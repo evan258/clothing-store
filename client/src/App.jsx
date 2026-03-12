@@ -38,7 +38,7 @@ function App() {
                                 top: targetY,
                                 behavior: "instant"
                             });
-                        }, 800);
+                        }, 1000);
                         clearInterval(intervalId);
                         console.log("attempt", attempt);
                     }
