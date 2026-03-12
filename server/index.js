@@ -180,7 +180,7 @@ app.post('/contact', requireAuth, contactLimiter, async (req, res) => {
             from: 'onboarding@resend.dev',
             to: email,
             subject: "Your OTP code",
-            text: `Your verification code is ${otp}. It expires in 5 minutes`
+            text: `SHOP.CO - Your verification code is ${otp}. It expires in 5 minutes`
         });
         res.json({message: "OTP sent to your email"});
     } catch (err) {
@@ -213,7 +213,7 @@ Message: ${text}
         await resend.emails.send({
             from: 'onboarding@resend.dev',
             to: email,
-            subject: "We received your message!",
+            subject: "SHOP.CO - We received your message!",
             text: "Thanks for reaching out! We will get back to you soon."
         });
         req.session.otp = null;
