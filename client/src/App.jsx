@@ -30,8 +30,9 @@ function App() {
                 const intervalId = setInterval(() => {
                     const pageHeight = document.documentElement.scrollHeight;
                     const targetY = parseInt(savedY, 10);
+                    const imagesLoaded = Array.from(document.images).every(img => img.complete);
                     console.log(targetY);
-                    if (pageHeight >= targetY) {
+                    if (pageHeight >= targetY && imagesLoaded) {
                         window.scrollTo({
                             top: targetY,
                             behavior: "instant"
