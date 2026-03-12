@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
 
 
-const CheckoutWrapper = () => {
+const CheckoutWrapper = ({user}) => {
     const {id} = useParams();
     const [clientSecret, setClientSecret] = useState("");
     const [error, setError] = useState("");
@@ -37,7 +37,7 @@ const CheckoutWrapper = () => {
                 <h4>{error}</h4>
             ) : clientSecret ? (
                 <Elements stripe={stripePromise} options={{clientSecret}}>
-                    <CheckoutForm orderId={id} />
+                    <CheckoutForm user={user} orderId={id} />
                 </Elements>
             ) : (
                 <h4>Loading...</h4>

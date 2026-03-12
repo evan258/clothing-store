@@ -185,7 +185,7 @@ function App() {
                 />} 
             />
             <Route path="/checkout" element={<OrderForm />} />
-            <Route path="/checkout/:id/payment" element={<CheckoutWrapper />} />
+            <Route path="/checkout/:id/payment" element={<CheckoutWrapper user={user} />} />
             <Route path="/products/categories/:id" 
                 element={<Catalogue 
                     user={user} 
