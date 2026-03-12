@@ -30,7 +30,7 @@ function App() {
                 const intervalId = setInterval(() => {
                     const pageHeight = document.documentElement.scrollHeight;
                     const targetY = parseInt(savedY, 10);
-                    // console.log(targetY);
+                    console.log(targetY);
                     if (pageHeight >= targetY) {
                         window.scrollTo({
                             top: targetY,
@@ -41,7 +41,10 @@ function App() {
                     }
                     attempt++;
                 }, 50);
-                return () => clearInterval(intervalId);
+                return () => {
+                    console.log("cleanup called");
+                    clearInterval(intervalId);
+                }
             }
         }
         const rafId = requestAnimationFrame(() => {
