@@ -52,7 +52,6 @@ const CheckoutForm = ({user, orderId}) => {
             return;
         }
         setIsProcessing(true);
-        console.log(user.id);
         const {error} = await stripe.confirmPayment({
             elements,
             confirmParams: {
