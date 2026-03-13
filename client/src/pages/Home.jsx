@@ -18,7 +18,9 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
     });
 
     const isReady = loading.sortedProducts && loading.categorizedProducts && loading.reviews;
-    if (isReady) {
+    const skipScrollRestore = location.state?.scrollTo;
+
+    if (isReady && !skipScrollRestore) {
         useScrollRestoration(location, navType);
     }
 

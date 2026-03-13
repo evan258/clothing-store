@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate, useNavigationType } from "react-router-dom"
 import { useScrollRestoration } from "../useScrollRestoration";
 
