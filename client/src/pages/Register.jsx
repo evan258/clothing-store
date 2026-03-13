@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const Register = ({setUser}) => {
     const [formData, setFormData] = useState({username: "", email: "", password: ""});
     const [error, setError] = useState("");
-    const navigate = useNavigate();
+    const location = useLocation();
+     const navType = useNavigationType();
+
+    useEffect(() => {
+        useScrollRestoration(location, navType);
+    }, []);
+
+   const navigate = useNavigate();
 
     const handleChange = (e) => {
         const {name, value} = e.target;

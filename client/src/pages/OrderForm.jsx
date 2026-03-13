@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom"
+import { Navigate, useLocation, useNavigate, useNavigationType } from "react-router-dom"
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const OrderForm = () => {
     const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -8,7 +9,13 @@ const OrderForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const location = useLocation();
     const state = location.state;
+    const navType = useNavigationType();
     const navigate = useNavigate(null);
+
+    useEffect(() => {
+        useScrollRestoration(location, navType);
+    }, []);
+
 
     if (!state) {
         return <Navigate to="/cart" replace state={{error: "Please proceed from the cart to checkout"}} />;

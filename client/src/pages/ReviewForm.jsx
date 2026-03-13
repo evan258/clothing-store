@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigationType, useParams } from "react-router-dom";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const ReviewForm = () => {
     const {id} = useParams();
@@ -7,7 +8,14 @@ const ReviewForm = () => {
     const [description, setDescription] = useState("");
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
-    const invalid = rating < 1 || rating > 5;
+    const navType = useNavigationType();
+    const location = useLocation();
+
+    useEffect(() => {
+        useScrollRestoration(location, navType);
+    }, []);
+
+   const invalid = rating < 1 || rating > 5;
 
     const handleSubmit = async (e) => {
         e.preventDefault();

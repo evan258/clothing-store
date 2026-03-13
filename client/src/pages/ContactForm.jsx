@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const ContactForm = () => {
     const [formData, setFormData] = useState({name: "", email: "", text: ""});
@@ -10,6 +11,13 @@ const ContactForm = () => {
     const [captchaToken, setCaptchaToken] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const navigate = useNavigate();
+    const navType = useNavigationType();
+    const location = useLocation();
+
+    useEffect(() => {
+        useScrollRestoration(location, navType);
+    }, []);
+
 
     const handleChange = (e) => {
         const {name, value} = e.target;

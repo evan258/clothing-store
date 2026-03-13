@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useNavigationType, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import plus from "../assets/images/plus.svg";
 import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
 import dayjs from "dayjs";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const { id } = useParams();
@@ -29,6 +30,8 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     const scrollRef = useRef(null);
     const localReviewsRef = useRef(null);
     const isFirstRender = useRef(true);
+    const navType = useNavigationType();
+    const location = useLocation();
 
     const scroll = (direction) => {
         if (scrollRef.current && scrollRef.current.scrollWidth > scrollRef.current.clientWidth) {
@@ -116,10 +119,16 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
             }
             setRelated(data || []);
         }
-        fetchProductDetails();
-        fetchStocks();
-        fetchReviews();
-        fetchRelated();
+        const fetchData = async () => {
+            try {
+                await Promise.all([fetchProductDetails(), fetchStocks(), fetchReviews(), fetchRelated()]);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                useScrollRestoration(location, navType);
+            }
+        }
+        fetchData();
     },[id]);
 
     const handleAddToCart = async () => {

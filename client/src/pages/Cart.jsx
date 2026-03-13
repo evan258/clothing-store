@@ -4,8 +4,9 @@ import CartItem from "../components/CartItem";
 import normal from "../assets/images/normal.png";
 import fast from "../assets/images/fast.png";
 import superFast from "../assets/images/superFast.png";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigationType } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const [cartItems, setCartItems] = useState([]);
@@ -15,6 +16,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
     const [message, setMessage] = useState("");
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
     const location = useLocation();
+    const navType = useNavigationType();
 
     useEffect(() => {
         if (location.state ?.error) {
@@ -92,6 +94,8 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                 setTimeout(() => {
                     setError("");
                 }, 5000);
+            } finally {
+                useScrollRestoration(location, navType);
             }
         }
         fetchCartDetails();

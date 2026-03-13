@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useNavigationType, useParams, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import StarRating from "../components/StarRating";
 import filter from "../assets/images/filter.svg";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
+import { useScrollRestoration } from "../useScrollRestoration";
 
-const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, bannerRef, reviewsRef, scrollToElement, scrollToTop}) => {
+const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const {id} = useParams();
     const [products, setProducts] = useState([]);
     const [searchParams] = useSearchParams();
@@ -13,9 +14,10 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, ba
     const navigate = useNavigate();
     const filterRef = useRef(null);
     const [sidebar, setSidebar] = useState(false);
-    
     const [pendingCategoryId, setPendingCategoryId] = useState(id);
     const [pendingOption, setPendingOption] = useState(option);
+    const navType = useNavigationType();
+    const location = useLocation();
 
     useEffect(() => {
         if (sidebar) {
@@ -37,6 +39,8 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, ba
                 setProducts(data || []);
             } catch (err) {
                 console.log(err);
+            } finally {
+                useScrollRestoration(location, navType);
             }
         }
 

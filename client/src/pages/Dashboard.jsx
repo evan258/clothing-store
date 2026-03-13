@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import userIcon from "../assets/images/user.svg";
 import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useNavigationType, useParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
 import ReviewOptions from "../components/ReviewOptions";
 import ReviewText from "../components/ReviewText";
 import Header from "../components/Header";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
     const {id} = useParams();
@@ -20,6 +21,8 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsRef = useRef(null);
     const isFirstRender = useRef(true);
+    const navType = useNavigationType();
+    const location = useLocation();
 
     const reviewsPerPage = 4;
     const currentPageLastIndex = reviewsPerPage * currentPage;
@@ -69,6 +72,8 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
             setTimeout(() => {
                 setError("");
             }, 5000);
+        } finally {
+            useScrollRestoration(location, navType);
         }
     }
 

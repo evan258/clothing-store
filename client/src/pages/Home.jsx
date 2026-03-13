@@ -4,11 +4,23 @@ import Brands from "../components/Brands.jsx";
 import ProductsBySort from "../components/ProductsBySort.jsx";
 import ProductsByCategories from "../components/ProductsByCategories.jsx";
 import HappyyCustomers from "../components/HappyCustomers.jsx";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useNavigationType } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useScrollRestoration } from "../useScrollRestoration.js";
 
 const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categoriesRef, reviewsRef, bannerRef, homeRef, scrollToElement}) => {
     const location = useLocation();
+    const navType = useNavigationType();
+    const [loading, setLoading] = useState({
+        sortedProducts: false,
+        categorizedProducts: false,
+        reviews: false
+    });
+
+    const isReady = loading.sortedProducts && loading.categorizedProducts && loading.reviews;
+    if (isReady) {
+        useScrollRestoration(location, navType);
+    }
 
     useEffect(() => {
         requestAnimationFrame(() => {
@@ -47,12 +59,12 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
             <div ref={brandsRef}>
                 <Brands />
             </div>
-            <ProductsBySort newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} />
+            <ProductsBySort newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} onLoad={() => setLoading(prev => ({...prev, sortedProducts: true}))} />
             <div ref={categoriesRef}>
-                <ProductsByCategories />
+                <ProductsByCategories onLoad={() => setLoading(prev => ({...prev, categorizedProducts: true}))} />
             </div>
             <div ref={reviewsRef}>
-                <HappyyCustomers />
+                <HappyyCustomers onLoad={() => setLoading(prev => ({...prev, reviews: true}))} />
             </div>
         </div>
     );

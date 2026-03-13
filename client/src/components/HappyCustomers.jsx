@@ -6,7 +6,7 @@ import ReviewText from "./ReviewText";
 import dayjs from "dayjs";
 
 
-const HappyCustomers = ({}) => {
+const HappyCustomers = ({onLoad}) => {
     const [reviews, setReviews] = useState([]);
     const scrollRef = useRef(null);
 
@@ -22,6 +22,8 @@ const HappyCustomers = ({}) => {
                 setReviews(data || []);
             } catch (err) {
                 console.log(err);
+            } finally {
+                onLoad();
             }
         }
         fetchReviews();

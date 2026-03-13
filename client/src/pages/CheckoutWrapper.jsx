@@ -1,14 +1,17 @@
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom";
+import { useNavigationType, useParams } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 
 const CheckoutWrapper = ({user}) => {
     const {id} = useParams();
     const [clientSecret, setClientSecret] = useState("");
     const [error, setError] = useState("");
+    const location = useNavigationType();
+    const navType = useNavigationType();
 
     const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -26,6 +29,8 @@ const CheckoutWrapper = ({user}) => {
                 setClientSecret(data.clientSecret);
             } catch (err) {
                 setError("Server error");
+            } finally {
+                useScrollRestoration(location, navType);
             }
         }
         fetchClientSecret();

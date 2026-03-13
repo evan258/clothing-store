@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"
+import { useLocation, useNavigationType, useParams } from "react-router-dom"
+import { useScrollRestoration } from "../useScrollRestoration";
 
 
 const EditReview = () => {
@@ -9,6 +10,8 @@ const EditReview = () => {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const invalid = rating < 1 || rating > 5;
+    const navType = useNavigationType();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchReview = async () => {
@@ -24,6 +27,8 @@ const EditReview = () => {
             } catch (err) {
                 console.log(err);
                 setError("Server error");
+            } finally {
+                useScrollRestoration(location, navType);
             }
         }
         fetchReview();

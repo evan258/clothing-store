@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Routes, Route, useLocation, useNavigationType } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -19,50 +19,22 @@ function App() {
     const [user, setUser] = useState(null);
     const [categories, setCategories] = useState(null);
     const location = useLocation();
-    const navType = useNavigationType();
 
     useEffect(() => {
-        if (navType === "POP") {
-            const savedY = sessionStorage.getItem(`scrollY${location.pathname}${location.search}`);
-            if (savedY !== null) {
-                const intervalId = setInterval(() => {
-                    const pageHeight = document.documentElement.scrollHeight;
-                    const targetY = parseInt(savedY, 10);
-                    const imagesLoaded = Array.from(document.images).every(img => img.complete);
-                    if (pageHeight >= targetY && imagesLoaded) {
-                        setTimeout(() => {
-                            window.scrollTo({
-                                top: targetY,
-                                behavior: "instant"
-                            });
-                            clearInterval(intervalId);
-                        }, 50);
-                    }
-                }, 50);
-                return () => {
-                    clearInterval(intervalId);
-                }
-            }
-        }
-        const rafId = requestAnimationFrame(() => {
-            window.scrollTo({
-                top: 0,
-                behavior: "instant"
-            });
-        });
-        return () => cancelAnimationFrame(rafId);
-    }, [location.pathname, navType, location.search]);
-
-    useEffect(() => {
-        let timerId;
+        let current = window.scrollY;
+        let prev;
+        let running = true;
         const handleScroll = () => {
-            clearTimeout(timerId);
-            timerId = setTimeout(() => {
-                sessionStorage.setItem(`scrollY${location.pathname}${location.search}`, window.scrollY);
-            }, 50);
+            prev = current;
+            current = window.scrollY;
+            console.log(window.scrollY, "location", location.pathname);
+            if (running) requestAnimationFrame(handleScroll);
         }
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        requestAnimationFrame(handleScroll);
+        return () => {
+            running = false;
+            sessionStorage.setItem(`scrollY${location.pathname}${location.search}`, prev);
+        }
     }, [location.pathname, location.search]);
 
     const brandsRef = useRef(null);

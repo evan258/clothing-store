@@ -1,11 +1,20 @@
 import { useState } from "react"
+import { useLocation, useNavigationType } from "react-router-dom";
+import { useScrollRestoration } from "../useScrollRestoration";
 
 
 const Verification = () => {
     const [code, setCode] = useState(null);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
-    const [processing, setProcessing] = useState(false);
+    const navType = useNavigationType();
+    const location = useLocation();
+
+    useEffect(() => {
+        useScrollRestoration(location, navType);
+    }, []);
+
+   const [processing, setProcessing] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
