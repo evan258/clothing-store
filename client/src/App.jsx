@@ -27,7 +27,6 @@ function App() {
         const handleScroll = () => {
             prev = current;
             current = window.scrollY;
-            console.log(window.scrollY, "location", location.pathname);
             if (running) requestAnimationFrame(handleScroll);
         }
         requestAnimationFrame(handleScroll);
@@ -46,26 +45,26 @@ function App() {
     const homeRef = useRef(null);
 
     const scrollToTop = () => {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             if (homeRef.current) {
                 homeRef.current.scrollIntoView({
                     behavior: "smooth",
                     block: "start"
                 });
             }
-        }, 50);
+        });
     }
 
 
     const scrollToElement = (element) => {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             if (element.current) {
                 element.current.scrollIntoView({
                     behavior: "smooth",
                     block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
                 });
             }
-        }, 50);
+        });
     }
 
     useEffect(() => {
