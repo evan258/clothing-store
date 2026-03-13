@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { useScrollRestoration } from "../useScrollRestoration";
 
@@ -6,7 +6,7 @@ const Register = ({setUser}) => {
     const [formData, setFormData] = useState({username: "", email: "", password: ""});
     const [error, setError] = useState("");
     const location = useLocation();
-     const navType = useNavigationType();
+    const navType = useNavigationType();
 
     useEffect(() => {
         useScrollRestoration(location, navType);
