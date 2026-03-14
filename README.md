@@ -17,7 +17,7 @@ Designed for both desktop and mobile devices, with smooth navigation and scroll 
 
 - **Scroll Restoration**:  
   - Scroll restoration is applied using a polling method.
-  - But due to some unknown bugs on mobile devices and inconsistent restoration on desktop a bash fix logic was applied. 
+  - But due to unexpected jump in scroll position while navigating to another page on mobile devices and inconsistency on desktop a bash fix logic was applied.
   - Basically an O(1) operation keeps running as long as user is on the page.
   - Not optimal but works consistently. 
   - Scroll restoration can sometimes be slow due to **Render free tier** delay.
