@@ -34,7 +34,7 @@ router.post('/contact', requireAuth, contactLimiter, async (req, res) => {
             from: 'onboarding@resend.dev',
             to: email,
             subject: "Your OTP code",
-            text: `SHOP.CO - Your verification code is ${otp}. It expires in 5 minutes`
+            text: `SHOP\u200B.CO - Your verification code is ${otp}. It expires in 5 minutes`
         });
         res.json({message: "OTP sent to your email"});
     } catch (err) {
