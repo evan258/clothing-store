@@ -157,7 +157,7 @@ function App() {
                     scrollToTop={scrollToTop} 
                 />} 
             />
-            <Route path="/checkout" element={<OrderForm />} />
+            <Route path="/checkout" element={<OrderForm user={user} setUser={setUser} />} />
             <Route path="/checkout/:id/payment" element={<CheckoutWrapper user={user} />} />
             <Route path="/products/categories/:id" 
                 element={<Catalogue 

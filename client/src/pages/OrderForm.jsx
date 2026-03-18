@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate, useNavigationType } from "react-router-dom"
 import { useScrollRestoration } from "../useScrollRestoration";
 
-const OrderForm = () => {
+const OrderForm = ({user, setUser}) => {
     const [paymentMethod, setPaymentMethod] = useState("cod");
     const [formData, setFormData] = useState({phone: "", address: ""});
     const [error, setError] = useState("");
@@ -70,13 +70,18 @@ const OrderForm = () => {
                 setIsSubmitting(false);
                 return;
             }
-            const id = data.orderId;
+            const orderId = data.orderId;
             if (paymentMethod === "card") {
-                navigate(`/checkout/${id}/payment`, {
+                navigate(`/checkout/${orderId}/payment`, {
                     replace: true,
                 });
             } else {
-                navigate("/dashboard", {
+                const userRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+                    credentials: "include",
+                });
+                const userData = await userRes.json();
+                setUser(userData);
+                navigate(`/dashboard/${user.id}`, {
                     state: {
                         message: "Order was added successfully",
                     },
