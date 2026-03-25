@@ -37,6 +37,7 @@ function App() {
         return () => {
             running = false;
             window.removeEventListener("beforeunload", saveScroll);
+            saveScroll();
         }
     }, [location.pathname, location.search]);
 
