@@ -72,8 +72,6 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
             setTimeout(() => {
                 setError("");
             }, 5000);
-        } finally {
-            useScrollRestoration(location, navType);
         }
     }
 
@@ -100,8 +98,16 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                 }, 5000);
             }
         }
-        fetchOrderDetails();
-        fetchUserDetails();
+        const fetchData = async () => {
+            try {
+                await Promise.all([fetchOrderDetails(), fetchUserDetails()]);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                useScrollRestoration(location, navType);
+            }
+        }
+        fetchData();
     }, []);
 
     const handleCancel = async (id) => {

@@ -1,5 +1,5 @@
 export const useScrollRestoration = (location, navType) => {
-    if (navType !== "POP") {
+    if (navType === "PUSH") {
         console.log("push");
         window.scrollTo({
             top: 0,
