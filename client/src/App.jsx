@@ -30,9 +30,13 @@ function App() {
             if (running) requestAnimationFrame(handleScroll);
         }
         requestAnimationFrame(handleScroll);
+        const saveScroll = () => {
+            sessionStorage.setItem(`scrollY${location.pathname}${location.search}`, prev);
+        }
+        window.addEventListener("beforeunload", saveScroll);
         return () => {
             running = false;
-            sessionStorage.setItem(`scrollY${location.pathname}${location.search}`, prev);
+            window.removeEventListener("beforeunload", saveScroll);
         }
     }, [location.pathname, location.search]);
 
