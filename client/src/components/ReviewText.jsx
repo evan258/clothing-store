@@ -18,7 +18,7 @@ const ReviewText = ({text, flag = false}) => {
             <p 
                 ref={textRef} 
                 className={
-                    `relative text-[rgb(0,0,0,0.6)] ${expanded ? "line-clamp-none" : flag ? "line-clamp-6 lg:line-clamp-5" : "line-clamp-4 lg:line-clamp-3"} 
+                    `relative whitespace-pre-wrap wrap-break-word text-[rgb(0,0,0,0.6)] ${expanded ? "line-clamp-none" : flag ? "line-clamp-6 lg:line-clamp-5" : "line-clamp-4 lg:line-clamp-3"} 
                     ${(!expanded && toggleNeeded) ? "after_line" : ""}`
                 }
             >
