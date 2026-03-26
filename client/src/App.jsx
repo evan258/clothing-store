@@ -31,12 +31,13 @@ function App() {
         }
         requestAnimationFrame(handleScroll);
         const saveScroll = () => {
+            console.log(prev);
             sessionStorage.setItem(`scrollY${location.pathname}${location.search}`, prev);
         }
-        window.addEventListener("beforeunload", saveScroll);
+        window.addEventListener("pagehide", saveScroll);
         return () => {
             running = false;
-            window.removeEventListener("beforeunload", saveScroll);
+            window.removeEventListener("pagehide", saveScroll);
             saveScroll();
         }
     }, [location.pathname, location.search]);
