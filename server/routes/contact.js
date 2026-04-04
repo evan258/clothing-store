@@ -2,11 +2,10 @@ import express from "express";
 import contactLimiter from "../middleware/contactLimiter.js";
 import resend from "../services/resend.js";
 import contactSchema from "../schemas/contactSchema.js";
-import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
-router.post('/contact', requireAuth, contactLimiter, async (req, res) => {
+router.post('/contact', async (req, res) => {
     try {
         const result = contactSchema.safeParse(req.body);
         if (!result.success) {
@@ -43,7 +42,7 @@ router.post('/contact', requireAuth, contactLimiter, async (req, res) => {
     }
 });
 
-router.post('/contact/verification', requireAuth, async (req, res) => {
+router.post('/contact/verification', contactLimiter, async (req, res) => {
     const {otp} = req.body;
     if (req.session.otp != otp) {
         return res.status(401).json({error: "Invalid code"});

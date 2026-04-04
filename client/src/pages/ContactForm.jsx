@@ -51,9 +51,10 @@ const ContactForm = () => {
             });
             const data = await res.json();
             if (!res.ok) {
-                if (data.name || data.email || data.text) {
+                const hasFieldErrors = Object.keys(data).length > 0;
+
+                if (hasFieldErrors) {
                     setErrors(data);
-                    return;
                 } else {
                     setWarning(data.error);
                     setTimeout(() => {
@@ -90,7 +91,7 @@ const ContactForm = () => {
                 >
                     <label className="font-archivo font-extralight" htmlFor="name-field">Name</label>
                     <input 
-                        required
+                        // required
                         id="name-field" 
                         name="name"
                         type="text" 
@@ -100,10 +101,10 @@ const ContactForm = () => {
                         className="w-full outline-none bg-white rounded-2xl p-2"
                         
                     />
-                    {errors.name && <p className="text-red-600 my-4">{errors.name}</p>}
+                    {errors.name && <p className="text-red-600 my-4">{errors.name[0]}</p>}
                     <label className="font-archivo font-extralight" htmlFor="email-field">Email</label>
                     <input 
-                        required
+                        // required
                         id="email-field" 
                         name="email"
                         type="email" 
@@ -112,10 +113,10 @@ const ContactForm = () => {
                         placeholder="Enter your email"
                         className="w-full outline-none bg-white rounded-2xl p-2"
                     />
-                    {errors.email && <p className="text-red-600 my-4">{errors.email}</p>}
+                    {errors.email && <p className="text-red-600 my-4">{errors.email[0]}</p>}
                     <label className="font-archivo font-extralight" htmlFor="text-field">Message</label>
                     <textarea 
-                        required
+                        // required
                         id="text-field"
                         name="text"
                         onChange={handleChange} 
@@ -123,7 +124,7 @@ const ContactForm = () => {
                         value={formData.text} 
                         className="w-full outline-none min-h-25 bg-white rounded-2xl p-2 resize-y my-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                     />
-                    {errors.text && <p className="text-red-600">{errors.text}</p>}
+                    {errors.text && <p className="text-red-600">{errors.text[0]}</p>}
                     <ReCAPTCHA
                         ref={recaptchaRef}
                         sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
