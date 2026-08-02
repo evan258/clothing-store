@@ -9,8 +9,9 @@ import ReviewOptions from "../components/ReviewOptions";
 import ReviewText from "../components/ReviewText";
 import Header from "../components/Header";
 import { useScrollRestoration } from "../useScrollRestoration";
+import Loading from "../components/Loading";
 
-const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Dashboard = ({setUser, user, categories}) => {
     const {id} = useParams();
     const [reviews, setReviews] = useState([]);
     const [userInfo, setUserInfo] = useState({});
@@ -23,6 +24,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
     const isFirstRender = useRef(true);
     const navType = useNavigationType();
     const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
     const reviewsPerPage = 4;
     const currentPageLastIndex = reviewsPerPage * currentPage;
@@ -76,6 +78,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
     }
 
     useEffect(() => {
+      setLoading(true);
         const fetchUserDetails = async () => {
             try {
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
@@ -105,6 +108,7 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
                 console.log(err);
             } finally {
                 useScrollRestoration(location, navType);
+              setLoading(false);
             }
         }
         fetchData();
@@ -158,9 +162,11 @@ const Dashboard = ({setUser, user, categories, brandsRef, newArrivalsRef, trendi
         }
     }
 
+  if (loading) return <Loading />;
+
     return (
         <div>
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
+            <Header user={user} categories={categories} />
             <div className="border-t border-[#F0F0F0] container py-6 sm:py-10 md:py-13.5 lg:py-17.5">
                 <div className="grid lg:grid-cols-[2fr_3fr] gap-5 sm:gap-6 md:gap-7 lg:gap-8 xl:gap-10 max-w-310 mx-auto items-center">
                     <div className="w-50 sm:w-60 md:w-70 lg:w-80">

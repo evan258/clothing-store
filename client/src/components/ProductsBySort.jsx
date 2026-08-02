@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import StarRating from "./StarRating";
+import { useDispatch, useSelector } from "react-redux";
+import { setScrollTo } from "../state/slice";
 
 
-const ProductsBySort = ({newArrivalsRef, trendingRef, onLoad}) => {
+const ProductsBySort = ({onLoad}) => {
     const [latest, setLatest] = useState([]);
     const [trending, setTrending] = useState([]);
     const [itemsPerRow, setItemsPerRow] = useState(2);
     const [showAllLatest, setShowAllLatest] = useState(false);
     const [showAllTrending, setShowAllTrending] = useState(false);
+    const newArrivalsRef = useRef(null);
+    const trendingRef = useRef(null);
+    const location = useLocation();
+  const navigate = useNavigate(null);
 
     useEffect(() => {
         const updateItemsPerRow = () => {
@@ -25,6 +31,26 @@ const ProductsBySort = ({newArrivalsRef, trendingRef, onLoad}) => {
         window.addEventListener('resize', updateItemsPerRow);
         return () => window.removeEventListener('resize', updateItemsPerRow);
     }, []);
+
+  const scrollTo = useSelector((state) => state.scroll.scrollTo);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (scrollTo === "trending") {
+      trendingRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      dispatch(setScrollTo(null));
+    } else if (scrollTo === "newArrivals") {
+      newArrivalsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      dispatch(setScrollTo(null));
+    }
+
+  }, [scrollTo]);
 
     const visibleLatest = showAllLatest ? latest : latest.slice(0, itemsPerRow);
     const visibleTrending = showAllTrending ? trending : trending.slice(0, itemsPerRow);

@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home.jsx";
@@ -42,37 +43,6 @@ function App() {
         }
     }, [location.pathname, location.search]);
 
-    const brandsRef = useRef(null);
-    const newArrivalsRef = useRef(null);
-    const trendingRef = useRef(null);
-    const categoriesRef = useRef(null);
-    const bannerRef = useRef(null);
-    const reviewsRef = useRef(null);
-    const homeRef = useRef(null);
-
-    const scrollToTop = () => {
-        requestAnimationFrame(() => {
-            if (homeRef.current) {
-                homeRef.current.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-        });
-    }
-
-
-    const scrollToElement = (element) => {
-        requestAnimationFrame(() => {
-            if (element.current) {
-                element.current.scrollIntoView({
-                    behavior: "smooth",
-                    block: `${(element === brandsRef || element === reviewsRef)? "center": "start"}`
-                });
-            }
-        });
-    }
-
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -113,6 +83,7 @@ function App() {
         fetchCategories();
     },[]);
 
+
   return (
       <>
         <Routes>
@@ -120,15 +91,6 @@ function App() {
                 element={<Home 
                     user={user}
                     categories={categories} 
-                    brandsRef={brandsRef}
-                    newArrivalsRef={newArrivalsRef} 
-                    trendingRef={trendingRef}
-                    categoriesRef={categoriesRef}
-                    reviewsRef={reviewsRef}
-                    bannerRef={bannerRef}
-                    homeRef={homeRef}
-                    scrollToElement={scrollToElement}
-                    scrollToTop={scrollToTop}
                 />}
             />
             <Route path="/login" element={<Login setUser={setUser} />} />
@@ -138,13 +100,6 @@ function App() {
                     user={user} 
                     setUser={setUser} 
                     categories={categories} 
-                    brandsRef={brandsRef} 
-                    newArrivalsRef={newArrivalsRef} 
-                    trendingRef={trendingRef} 
-                    bannerRef={bannerRef} 
-                    reviewsRef={reviewsRef} 
-                    scrollToElement={scrollToElement} 
-                    scrollToTop={scrollToTop} 
                 />} 
             />
             <Route path="/reviews/post/:id" element={<ReviewForm />} />
@@ -154,13 +109,6 @@ function App() {
                     user={user} 
                     setUser={setUser} 
                     categories={categories} 
-                    brandsRef={brandsRef} 
-                    newArrivalsRef={newArrivalsRef} 
-                    trendingRef={trendingRef} 
-                    bannerRef={bannerRef} 
-                    reviewsRef={reviewsRef} 
-                    scrollToElement={scrollToElement} 
-                    scrollToTop={scrollToTop} 
                 />} 
             />
             <Route path="/checkout" element={<OrderForm user={user} setUser={setUser} />} />
@@ -169,13 +117,6 @@ function App() {
                 element={<Catalogue 
                     user={user} 
                     categories={categories} 
-                    brandsRef={brandsRef} 
-                    newArrivalsRef={newArrivalsRef} 
-                    trendingRef={trendingRef} 
-                    bannerRef={bannerRef} 
-                    reviewsRef={reviewsRef} 
-                    scrollToElement={scrollToElement} 
-                    scrollToTop={scrollToTop} 
                 />} 
             />
             <Route path="/contact" element={<ContactForm />} />
@@ -185,22 +126,11 @@ function App() {
                     setUser={setUser}
                     user={user}
                     categories={categories}
-                    brandsRef={brandsRef}
-                    newArrivalsRef={newArrivalsRef}
-                    trendingRef={trendingRef}
-                    bannerRef={bannerRef}
-                    scrollToElement={scrollToElement} 
-                    scrollToTop={scrollToTop}
-                />} 
+                  />} 
             />
         </Routes>
         <Footer
             user={user}
-            brandsRef={brandsRef}
-            reviewsRef={reviewsRef}
-            bannerRef={bannerRef}
-            scrollToElement={scrollToElement}
-            scrollToTop={scrollToTop}
         />
       </>
   );

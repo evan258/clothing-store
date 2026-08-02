@@ -1,26 +1,14 @@
+import React from "react";
 import logo from "../assets/images/logo.png";
 import github from "../assets/images/github.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setScrollTo } from "../state/slice";
 
-const Footer = ({user, brandsRef, reviewsRef, bannerRef, scrollToElement, scrollToTop}) => {
+const Footer = ({user}) => {
     const location = useLocation();
     const navigate = useNavigate();
-
-    const goToSection = (section) => {
-        if (location.pathname === '/') {
-            let ref;
-            if (section === "banner") ref = bannerRef;
-            else if (section === "reviews") ref = reviewsRef;
-            else if (section === "brands") ref = brandsRef;
-            scrollToElement(ref);
-        } else {
-            navigate('/', {
-                state: {
-                    scrollTo: section
-                }
-            });
-        }
-    }
+  const dispatch = useDispatch();
 
     return (
         <div className="relative bg-[#F0F0F0] w-full pt-47.5 sm:44 md:40 lg:37 xl:pt-35 pb-19 md:pb-20 lg:pb-22 mt-52 sm:mt-48 md:mt-44 lg:mt-40">
@@ -29,7 +17,7 @@ const Footer = ({user, brandsRef, reviewsRef, bannerRef, scrollToElement, scroll
                     <div className="w-full lg:max-w-62.5">
                         <img 
                             onClick={() => {
-                                if (location.pathname === '/') scrollToTop();
+                                if (location.pathname === '/') window.scrollTo({top: 0});
                                 else navigate('/');
                             }} 
                             className="cursor-pointer" src={logo} alt="logo" 
@@ -42,9 +30,39 @@ const Footer = ({user, brandsRef, reviewsRef, bannerRef, scrollToElement, scroll
                     <div>
                         <h5 className="font-medium leading-4.5 text-[14px] tracking-[3px] md:text-[15px] lg:text-[16px]">Company</h5>
                         <ul className="flex flex-col text-[rgba(0,0,0,0.6)] pt-4 md:pt-5 lg:pt-6 gap-1 md:gap-1.5 lg:gap-2">
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("banner")}>About</a></li>
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("reviews")}>Reviews</a></li>
-                            <li><a className="text-[14px] leading-4 lg:text-[16px] lg:leading-4.75 md:text-[15px] md:leading-[17.5px] cursor-pointer" onClick={() => goToSection("brands")}>Brands</a></li>
+                          <li>
+                            <a 
+                              className="text-[14px] leading-4 md:text-[15px] md:leading-[17.5px] lg:text-[16px] lg:leading-4.75 cursor-pointer" 
+                              onClick={() => {
+                                dispatch(setScrollTo("banner"));
+                                navigate("/");
+                              }}
+                            >
+                              About
+                            </a>
+                          </li>
+                          <li>
+                            <a 
+                              className="text-[14px] leading-4 md:text-[15px] md:leading-[17.5px] lg:text-[16px] lg:leading-4.75 cursor-pointer" 
+                              onClick={() => {
+                                dispatch(setScrollTo("reviews"));
+                                navigate("/");
+                              }}
+                            >
+                              Reviews
+                            </a>
+                          </li>
+                          <li>
+                            <a 
+                              className="text-[14px] leading-4 md:text-[15px] md:leading-[17.5px] lg:text-[16px] lg:leading-4.75 cursor-pointer" 
+                              onClick={() => {
+                                dispatch(setScrollTo("brands"));
+                                navigate("/");
+                              }}
+                            >
+                              Brands
+                            </a>
+                          </li>
                         </ul>
                     </div>
                     <div>

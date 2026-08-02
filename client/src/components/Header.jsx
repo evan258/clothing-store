@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useRef, useState } from "react"
 import logo from "../assets/images/logo.png";
 import cart from "../assets/images/cart.svg";
@@ -9,8 +10,10 @@ import toggle from "../assets/images/toggle.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "./Search";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
+import { useDispatch, useSelector } from "react-redux";
+import { setScrollTo } from "../state/slice";
 
-const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Header = ({user, categories}) => {
     const [navOpen, setNavOpen] = useState(false);
     const [shopOpen, setShopOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
@@ -19,6 +22,7 @@ const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrol
     const inputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (navOpen) {
@@ -45,19 +49,8 @@ const Header = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrol
     }
 
     const goToSection = (section) => {
-        if (location.pathname === '/') {
-            let ref;
-            if (section === "newArrivals") ref = newArrivalsRef;
-            else if (section === "trending") ref = trendingRef;
-            else if (section === "brands") ref = brandsRef;
-            scrollToElement(ref);
-        } else {
-            navigate('/', {
-                state: {
-                    scrollTo: section
-                }
-            });
-        }
+        dispatch(setScrollTo(section));
+        navigate('/');
     }
 
     return (

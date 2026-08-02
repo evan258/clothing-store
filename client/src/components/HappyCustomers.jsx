@@ -4,11 +4,14 @@ import arrowRight from "../assets/images/arrowRight.svg";
 import StarRating from "./StarRating";
 import ReviewText from "./ReviewText";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "react-redux";
+import { setScrollTo } from "../state/slice";
 
 
 const HappyCustomers = ({onLoad}) => {
     const [reviews, setReviews] = useState([]);
     const scrollRef = useRef(null);
+  const reviewsRef = useRef(null);
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -29,6 +32,19 @@ const HappyCustomers = ({onLoad}) => {
         fetchReviews();
     }, []);
 
+  const scrollTo = useSelector((state) => state.scroll.scrollTo);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (scrollTo === "reviews") {
+      reviewsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      dispatch(setScrollTo(null));
+    }
+  }, [scrollTo]);
+
     const scroll = (direction) => {
         if (scrollRef.current && scrollRef.current.scrollWidth > scrollRef.current.clientWidth) {
             const scrollAmount = scrollRef.current.scrollWidth / reviews.length;
@@ -41,7 +57,7 @@ const HappyCustomers = ({onLoad}) => {
     }
 
     return (
-        <div className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20">
+        <div ref={reviewsRef} className="container pt-12.5 md:pt-15 lg:pt-18 xl:pt-20">
             <div className="max-w-310 mx-auto">
                 <div className="flex justify-between items-end">
                     <h2>OUR HAPPY CUSTOMERS</h2>

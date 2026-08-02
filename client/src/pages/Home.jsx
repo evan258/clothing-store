@@ -7,8 +7,11 @@ import HappyyCustomers from "../components/HappyCustomers.jsx";
 import { useLocation, useNavigationType } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useScrollRestoration } from "../useScrollRestoration.js";
+import Loading from "../components/Loading.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { setScrollTo } from "../state/slice.js";
 
-const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categoriesRef, reviewsRef, bannerRef, homeRef, scrollToElement}) => {
+const Home = ({user, categories}) => {
     const location = useLocation();
     const navType = useNavigationType();
     const [loading, setLoading] = useState({
@@ -16,58 +19,39 @@ const Home = ({user, categories, brandsRef, newArrivalsRef, trendingRef, categor
         categorizedProducts: false,
         reviews: false
     });
+    const scrollTo = useSelector((state) => state.scroll.scrollTo);
 
     const isReady = loading.sortedProducts && loading.categorizedProducts && loading.reviews;
-    const skipScrollRestore = location.state?.scrollTo;
-
-    if (isReady && !skipScrollRestore) {
-        useScrollRestoration(location, navType);
-    }
+    const skipScrollRestore = scrollTo !== null;
 
     useEffect(() => {
-        requestAnimationFrame(() => {
-            if (location.state?.scrollTo) {
-                let ref;
-                if (location.state.scrollTo === "banner") ref = bannerRef;
-                else if (location.state.scrollTo === "reviews") ref = reviewsRef;
-                else if (location.state.scrollTo === "brands") ref = brandsRef;
-                else if (location.state.scrollTo === "newArrivals") ref = newArrivalsRef;
-                else if (location.state.scrollTo === "trending") ref = trendingRef;
-                if (ref?.current) {
-                    scrollToElement(ref);
-                }
-                window.history.replaceState({}, document.title);
-            }
-        });
-    }, [location]);
+      console.log(scrollTo);
+      if (!isReady || skipScrollRestore) return;
+      useScrollRestoration(location, navType);
+    }, [isReady]);
 
     return (
-       <div
-            ref={homeRef}
-        > 
+       <div> 
             <Header
                 user={user}
                 categories={categories}
-                brandsRef={brandsRef}
-                newArrivalsRef={newArrivalsRef}
-                trendingRef={trendingRef}
-                scrollToElement={scrollToElement}
             />
-            <div ref={bannerRef}>
-                <Banner
-                    scrollToCategories={() => scrollToElement(categoriesRef)}
-                />
+            <div>
+                <Banner />
             </div>
-            <div ref={brandsRef}>
+            <div>
                 <Brands />
             </div>
-            <ProductsBySort newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} onLoad={() => setLoading(prev => ({...prev, sortedProducts: true}))} />
-            <div ref={categoriesRef}>
+            <ProductsBySort onLoad={() => setLoading(prev => ({...prev, sortedProducts: true}))} />
+            <div>
                 <ProductsByCategories onLoad={() => setLoading(prev => ({...prev, categorizedProducts: true}))} />
             </div>
-            <div ref={reviewsRef}>
+            <div>
                 <HappyyCustomers onLoad={() => setLoading(prev => ({...prev, reviews: true}))} />
             </div>
+            {!isReady && (
+              <Loading />
+            )}
         </div>
     );
 }

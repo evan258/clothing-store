@@ -5,8 +5,9 @@ import StarRating from "../components/StarRating";
 import filter from "../assets/images/filter.svg";
 import { enablePageScroll, disablePageScroll } from "@fluejs/noscroll";
 import { useScrollRestoration } from "../useScrollRestoration";
+import Loading from "../components/Loading";
 
-const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Catalogue = ({user, categories}) => {
     const {id} = useParams();
     const [products, setProducts] = useState([]);
     const [searchParams] = useSearchParams();
@@ -18,6 +19,7 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
     const [pendingOption, setPendingOption] = useState(option);
     const navType = useNavigationType();
     const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (sidebar) {
@@ -28,6 +30,7 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
     }, [sidebar]);
 
     useEffect(() => {
+      setLoading(true);
         const fetchProducts = async () => {
             try {
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/products/categories/${id}?sort=${option}`);
@@ -41,6 +44,7 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
                 console.log(err);
             } finally {
                 useScrollRestoration(location, navType);
+              setLoading(false);
             }
         }
 
@@ -73,9 +77,11 @@ const Catalogue = ({user, categories, brandsRef, newArrivalsRef, trendingRef, sc
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [sidebar]);
 
+  if (loading) return <Loading />;
+
     return (
         <div>
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
+            <Header user={user} categories={categories} />
             <div className="container border-t border-[#F0F0F0]">
                 <div className="max-w-max mx-auto grid gap-5 lg:grid-cols-[1fr_4fr] items-start pt-6 sm:pt-10 md:pt-13.5 lg:pt-17.5">
                     <div className={`${sidebar? "translate-x-0": "-translate-x-full lg:translate-x-0"} transition-transform duration-500 lg:flex lg:static bg-transparent fixed top-25 sm:top-28 md:top-31 left-0 right-0 bottom-0 z-10`}>

@@ -11,8 +11,9 @@ import arrowLeft from "../assets/images/arrowLeft.svg";
 import arrowRight from "../assets/images/arrowRight.svg";
 import dayjs from "dayjs";
 import { useScrollRestoration } from "../useScrollRestoration";
+import Loading from "../components/Loading";
 
-const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const ProductDetails = ({user, setUser, categories}) => {
     const { id } = useParams();
     const [productDetails, setProductDetails] = useState({});
     const [error, setError] = useState("");
@@ -32,6 +33,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
     const isFirstRender = useRef(true);
     const navType = useNavigationType();
     const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
     const scroll = (direction) => {
         if (scrollRef.current && scrollRef.current.scrollWidth > scrollRef.current.clientWidth) {
@@ -39,7 +41,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
             
             scrollRef.current.scrollBy({
                 left: (direction === "left") ? -scrollAmount : scrollAmount,
-                behavior: "instant",
+                behavior: "smooth",
             });
         }
     }
@@ -83,6 +85,7 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
         setCartMessage("");
         setCartError("");
         setSelectedStock(null);
+      setLoading(true);
         const fetchProductDetails = async () => {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
             const data = await res.json();
@@ -126,10 +129,12 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
                 console.log(err);
             } finally {
                 useScrollRestoration(location, navType);
+              setLoading(false);
             }
         }
         fetchData();
     },[id]);
+
 
     const handleAddToCart = async () => {
         if (!selectedStock) {
@@ -222,9 +227,11 @@ const ProductDetails = ({user, setUser, categories, brandsRef, newArrivalsRef, t
         navigate(`/reviews/post/${productDetails.id}`);
     }
 
+  if (loading) return <Loading />;
+
     return (
         <div>
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
+            <Header user={user} categories={categories} />
             <div
                 className="container border-t border-[#F0F0F0] py-6 sm:py-10 md:py-13.5 lg:py-17.5"
             >

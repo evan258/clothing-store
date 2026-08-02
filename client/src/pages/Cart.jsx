@@ -7,8 +7,9 @@ import superFast from "../assets/images/superFast.png";
 import { useLocation, useNavigationType } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
 import { useScrollRestoration } from "../useScrollRestoration";
+import Loading from "../components/Loading";
 
-const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef, scrollToElement}) => {
+const Cart = ({user, setUser, categories}) => {
     const [cartItems, setCartItems] = useState([]);
     const [deliveryOptions, setDeliveryOptions] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -17,6 +18,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
     const location = useLocation();
     const navType = useNavigationType();
+  const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (location.state ?.error) {
@@ -52,6 +54,7 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
     };
 
     useEffect(() => {
+        setLoading(true);
         const fetchCartDetails = async () => {
             try {
                 const cartRes = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
@@ -96,15 +99,18 @@ const Cart = ({user, setUser, categories, brandsRef, newArrivalsRef, trendingRef
                 }, 5000);
             } finally {
                 useScrollRestoration(location, navType);
+              setLoading(false);
             }
         }
         fetchCartDetails();
     }, []);
 
+  if (loading) return <Loading />;
+
        return (
         <div
         >
-            <Header user={user} categories={categories} brandsRef={brandsRef} newArrivalsRef={newArrivalsRef} trendingRef={trendingRef} scrollToElement={scrollToElement} />
+            <Header user={user} categories={categories}/>
             <div
                 className="container pt-12 md:pt-14 lg:pt-16 xl:pt-17.5"
             >

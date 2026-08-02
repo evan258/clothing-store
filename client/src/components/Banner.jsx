@@ -1,15 +1,37 @@
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import banner from "../assets/images/banner.png";
 import bannerStar from "../assets/images/bannerStar.png";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setScrollTo } from "../state/slice";
 
-const Banner = ({scrollToCategories}) => {
+const Banner = () => {
+  const bannerRef = useRef(null);
+  const scrollTo = useSelector((state) => state.scroll.scrollTo);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("banner", scrollTo);
+    if (scrollTo === "banner") {
+      bannerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+      dispatch(setScrollTo(null));
+    }
+  }, [scrollTo]);
+      
     return (
-        <div className="w-full bg-[#F0F0F0]">
+        <div ref={bannerRef} className="w-full bg-[#F0F0F0]">
             <div className="container">
                 <div className="max-w-310 mx-auto grid lg:grid-cols-2 gap-12.5 justify-items-center">
                     <div className="max-w-78.75 md:max-w-100 lg:max-w-137 py-10 sm:py-12 md:py-15 xl:py-20 2xl:py-25">
                         <h1>FIND CLOTHES THAT MATCHES YOUR STYLE</h1>
                         <p className="my-8">Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.</p>
-                        <button onClick={scrollToCategories} className="btn-dark">Shop now</button>
+                        <Link to="products/categories/1">
+                            <button className="btn-dark">Shop now</button>
+                        </Link>
                         <div className="flex flex-wrap xl:flex-nowrap justify-center gap-4 lg:gap-6 w-full mt-12">
                             <div>
                                 <h2 className="font-satoshi">200+</h2>
