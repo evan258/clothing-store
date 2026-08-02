@@ -5,7 +5,7 @@ import ProductsBySort from "../components/ProductsBySort.jsx";
 import ProductsByCategories from "../components/ProductsByCategories.jsx";
 import HappyyCustomers from "../components/HappyCustomers.jsx";
 import { useLocation, useNavigationType } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScrollRestoration } from "../useScrollRestoration.js";
 import Loading from "../components/Loading.jsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,15 +20,17 @@ const Home = ({user, categories}) => {
         reviews: false
     });
     const scrollTo = useSelector((state) => state.scroll.scrollTo);
+    const scrollToInitial = useRef(scrollTo);
 
     const isReady = loading.sortedProducts && loading.categorizedProducts && loading.reviews;
-    const skipScrollRestore = scrollTo !== null;
+    const skipScrollRestore = scrollToInitial.current !== null;
 
     useEffect(() => {
-      console.log(scrollTo);
+      console.log("skip", skipScrollRestore);
       if (!isReady || skipScrollRestore) return;
+      console.log("pass");
       useScrollRestoration(location, navType);
-    }, [isReady]);
+    }, [isReady, skipScrollRestore]);
 
     return (
        <div> 
