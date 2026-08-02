@@ -13,8 +13,7 @@ const ProductsBySort = ({onLoad}) => {
     const [showAllTrending, setShowAllTrending] = useState(false);
     const newArrivalsRef = useRef(null);
     const trendingRef = useRef(null);
-    const location = useLocation();
-  const navigate = useNavigate(null);
+  const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const updateItemsPerRow = () => {
@@ -36,6 +35,7 @@ const ProductsBySort = ({onLoad}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (loading) return;
     if (scrollTo === "trending") {
       trendingRef.current.scrollIntoView({
         behavior: "smooth",
@@ -50,7 +50,7 @@ const ProductsBySort = ({onLoad}) => {
       dispatch(setScrollTo(null));
     }
 
-  }, [scrollTo]);
+  }, [scrollTo, loading]);
 
     const visibleLatest = showAllLatest ? latest : latest.slice(0, itemsPerRow);
     const visibleTrending = showAllTrending ? trending : trending.slice(0, itemsPerRow);
@@ -90,6 +90,7 @@ const ProductsBySort = ({onLoad}) => {
                 console.log(err);
             } finally {
                 onLoad();
+              setLoading(false);
             }
         }
         fetchData();
