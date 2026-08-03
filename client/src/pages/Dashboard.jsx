@@ -153,7 +153,7 @@ const Dashboard = ({setUser, user, categories}) => {
                 return;
             }
             setUser(null);
-            navigate('/', {replace:true});
+            navigate('/');
         } catch (err) {
             setError("Server error");
             setTimeout(() => {
