@@ -76,7 +76,7 @@ const EditReview = () => {
                     <input 
                         id="rating-field" 
                         type="number" 
-                        value={rating}
+                        value={String(rating)}
                         onChange={(e) => setRating(Number(e.target.value))} 
                         placeholder="Select a rating between 1 and 5"
                         className={`w-full my-4 outline-none bg-white rounded-2xl p-2
